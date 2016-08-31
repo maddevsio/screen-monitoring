@@ -1,12 +1,12 @@
 package dashboard
 
 import (
-	"github.com/boltdb/bolt"
-	"time"
-	"sync"
-	"fmt"
-	"errors"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/boltdb/bolt"
+	"sync"
+	"time"
 )
 
 type WidgetStore struct {

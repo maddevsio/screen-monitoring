@@ -36,7 +36,6 @@ func decodeRegisterWidgetRequest(_ context.Context, r *http.Request) (interface{
 	return request, nil
 }
 
-
 func decodePagesRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return nil, nil
 }

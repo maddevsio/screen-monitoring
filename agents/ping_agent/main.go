@@ -1,22 +1,22 @@
 package main
 
 import (
-	"os/exec"
-	"log"
-	"regexp"
 	"bytes"
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
-	"golang.org/x/net/context"
-	httptransport "github.com/go-kit/kit/transport/http"
-	"github.com/go-kit/kit/endpoint"
 	"flag"
+	"github.com/go-kit/kit/endpoint"
+	httptransport "github.com/go-kit/kit/transport/http"
+	"golang.org/x/net/context"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
+	"os/exec"
+	"regexp"
 )
 
 type AgentService interface {
-	CheckResponseTime(string) (string)
+	CheckResponseTime(string) string
 }
 
 type agentService struct{}
@@ -26,10 +26,9 @@ type Settings struct {
 	Width   int    `json:"width"`
 	Height  int    `json:"height"`
 	Content string `json:"content"`
-
 }
 
-func (agentService) CheckResponseTime(url string) (string) {
+func (agentService) CheckResponseTime(url string) string {
 	cmd := exec.Command("ping", "-c 1", url)
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -68,20 +67,20 @@ func AgentRegistration(url, hostname, gauge string) {
 }
 
 const (
-	defaultPort = "8090"
+	defaultPort         = "8090"
 	defaultDashboardURL = "http://localhost:8080/dashboard/v1/register"
-	defaultTargetHost = "google.com"
+	defaultTargetHost   = "google.com"
 )
 
 func main() {
 	var (
-		addr = envString("PORT", defaultPort)
+		addr         = envString("PORT", defaultPort)
 		dashboardUrl = envString("DASHBOARD_URL", defaultDashboardURL)
-		targetHost = envString("TARGET_HOST", defaultTargetHost)
+		targetHost   = envString("TARGET_HOST", defaultTargetHost)
 
-		httpAddr = flag.String("httpAddr", ":"+addr, "HTTP listen address")
+		httpAddr     = flag.String("httpAddr", ":"+addr, "HTTP listen address")
 		dashboardURL = flag.String("dashboardURL", dashboardUrl, "Dashboard service URL")
-		hostName = flag.String("targetHost", targetHost, "Target hostname and port")
+		hostName     = flag.String("targetHost", targetHost, "Target hostname and port")
 
 		ctx = context.Background()
 		svc = agentService{}

@@ -10,8 +10,7 @@ import (
 	"net/http"
 	"path"
 	"regexp"
-
-	"github.com/gorilla/context"
+	"strings"
 )
 
 // NewRouter returns a new router instance.
@@ -48,7 +47,11 @@ type Router struct {
 	namedRoutes map[string]*Route
 	// See Router.StrictSlash(). This defines the flag for new routes.
 	strictSlash bool
-	// If true, do not clear the request context after handling the request
+	// See Router.SkipClean(). This defines the flag for new routes.
+	skipClean bool
+	// If true, do not clear the request context after handling the request.
+	// This has no effect when go1.7+ is used, since the context is stored
+	// on the request itself.
 	KeepContext bool
 }
 
@@ -73,32 +76,35 @@ func (r *Router) Match(req *http.Request, match *RouteMatch) bool {
 // When there is a match, the route variables can be retrieved calling
 // mux.Vars(request).
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	// Clean path to canonical form and redirect.
-	if p := cleanPath(req.URL.Path); p != req.URL.Path {
+	if !r.skipClean {
+		path := getPath(req)
+		// Clean path to canonical form and redirect.
+		if p := cleanPath(path); p != path {
 
-		// Added 3 lines (Philip Schlump) - It was dropping the query string and #whatever from query.
-		// This matches with fix in go 1.2 r.c. 4 for same problem.  Go Issue:
-		// http://code.google.com/p/go/issues/detail?id=5252
-		url := *req.URL
-		url.Path = p
-		p = url.String()
+			// Added 3 lines (Philip Schlump) - It was dropping the query string and #whatever from query.
+			// This matches with fix in go 1.2 r.c. 4 for same problem.  Go Issue:
+			// http://code.google.com/p/go/issues/detail?id=5252
+			url := *req.URL
+			url.Path = p
+			p = url.String()
 
-		w.Header().Set("Location", p)
-		w.WriteHeader(http.StatusMovedPermanently)
-		return
+			w.Header().Set("Location", p)
+			w.WriteHeader(http.StatusMovedPermanently)
+			return
+		}
 	}
 	var match RouteMatch
 	var handler http.Handler
 	if r.Match(req, &match) {
 		handler = match.Handler
-		setVars(req, match.Vars)
-		setCurrentRoute(req, match.Route)
+		req = setVars(req, match.Vars)
+		req = setCurrentRoute(req, match.Route)
 	}
 	if handler == nil {
 		handler = http.NotFoundHandler()
 	}
 	if !r.KeepContext {
-		defer context.Clear(req)
+		defer contextClear(req)
 	}
 	handler.ServeHTTP(w, req)
 }
@@ -130,6 +136,19 @@ func (r *Router) GetRoute(name string) *Route {
 // route inherit the original StrictSlash setting.
 func (r *Router) StrictSlash(value bool) *Router {
 	r.strictSlash = value
+	return r
+}
+
+// SkipClean defines the path cleaning behaviour for new routes. The initial
+// value is false. Users should be careful about which routes are not cleaned
+//
+// When true, if the route path is "/path//to", it will remain with the double
+// slash. This is helpful if you have a route like: /fetch/http://xkcd.com/534/
+//
+// When false, the path will be cleaned, so /fetch/http://xkcd.com/534/ will
+// become /fetch/http/xkcd.com/534
+func (r *Router) SkipClean(value bool) *Router {
+	r.skipClean = value
 	return r
 }
 
@@ -170,7 +189,7 @@ func (r *Router) buildVars(m map[string]string) map[string]string {
 
 // NewRoute registers an empty route.
 func (r *Router) NewRoute() *Route {
-	route := &Route{parent: r, strictSlash: r.strictSlash}
+	route := &Route{parent: r, strictSlash: r.strictSlash, skipClean: r.skipClean}
 	r.routes = append(r.routes, route)
 	return route
 }
@@ -236,7 +255,7 @@ func (r *Router) Schemes(schemes ...string) *Route {
 	return r.NewRoute().Schemes(schemes...)
 }
 
-// BuildVars registers a new route with a custom function for modifying
+// BuildVarsFunc registers a new route with a custom function for modifying
 // route variables before building a URL.
 func (r *Router) BuildVarsFunc(f BuildVarsFunc) *Route {
 	return r.NewRoute().BuildVarsFunc(f)
@@ -267,6 +286,9 @@ func (r *Router) walk(walkFn WalkFunc, ancestors []*Route) error {
 		err := walkFn(t, r, ancestors)
 		if err == SkipRouter {
 			continue
+		}
+		if err != nil {
+			return err
 		}
 		for _, sr := range t.matchers {
 			if h, ok := sr.(*Router); ok {
@@ -308,7 +330,7 @@ const (
 
 // Vars returns the route variables for the current request, if any.
 func Vars(r *http.Request) map[string]string {
-	if rv := context.Get(r, varsKey); rv != nil {
+	if rv := contextGet(r, varsKey); rv != nil {
 		return rv.(map[string]string)
 	}
 	return nil
@@ -320,27 +342,45 @@ func Vars(r *http.Request) map[string]string {
 // after the handler returns, unless the KeepContext option is set on the
 // Router.
 func CurrentRoute(r *http.Request) *Route {
-	if rv := context.Get(r, routeKey); rv != nil {
+	if rv := contextGet(r, routeKey); rv != nil {
 		return rv.(*Route)
 	}
 	return nil
 }
 
-func setVars(r *http.Request, val interface{}) {
-	if val != nil {
-		context.Set(r, varsKey, val)
-	}
+func setVars(r *http.Request, val interface{}) *http.Request {
+	return contextSet(r, varsKey, val)
 }
 
-func setCurrentRoute(r *http.Request, val interface{}) {
-	if val != nil {
-		context.Set(r, routeKey, val)
-	}
+func setCurrentRoute(r *http.Request, val interface{}) *http.Request {
+	return contextSet(r, routeKey, val)
 }
 
 // ----------------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------------
+
+// getPath returns the escaped path if possible; doing what URL.EscapedPath()
+// which was added in go1.5 does
+func getPath(req *http.Request) string {
+	if req.RequestURI != "" {
+		// Extract the path from RequestURI (which is escaped unlike URL.Path)
+		// as detailed here as detailed in https://golang.org/pkg/net/url/#URL
+		// for < 1.5 server side workaround
+		// http://localhost/path/here?v=1 -> /path/here
+		path := req.RequestURI
+		path = strings.TrimPrefix(path, req.URL.Scheme+`://`)
+		path = strings.TrimPrefix(path, req.URL.Host)
+		if i := strings.LastIndex(path, "?"); i > -1 {
+			path = path[:i]
+		}
+		if i := strings.LastIndex(path, "#"); i > -1 {
+			path = path[:i]
+		}
+		return path
+	}
+	return req.URL.Path
+}
 
 // cleanPath returns the canonical path for p, eliminating . and .. elements.
 // Borrowed from the net/http package.
@@ -357,6 +397,7 @@ func cleanPath(p string) string {
 	if p[len(p)-1] == '/' && np != "/" {
 		np += "/"
 	}
+
 	return np
 }
 

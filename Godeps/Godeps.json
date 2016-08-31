@@ -1,0 +1,65 @@
+{
+	"ImportPath": "github.com/maddevsio/screen-monitoring",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/boltdb/bolt",
+			"Comment": "v1.3.0",
+			"Rev": "583e8937c61f1af6513608ccc75c97b6abdf4ff9"
+		},
+		{
+			"ImportPath": "github.com/go-kit/kit/endpoint",
+			"Comment": "v0.2.0-73-g483f2cd",
+			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+		},
+		{
+			"ImportPath": "github.com/go-kit/kit/log",
+			"Comment": "v0.2.0-73-g483f2cd",
+			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+		},
+		{
+			"ImportPath": "github.com/go-kit/kit/transport/http",
+			"Comment": "v0.2.0-73-g483f2cd",
+			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+		},
+		{
+			"ImportPath": "github.com/go-logfmt/logfmt",
+			"Comment": "v0.2.0-9-gd432719",
+			"Rev": "d4327190ff838312623b09bfeb50d7c93c8d9c1d"
+		},
+		{
+			"ImportPath": "github.com/go-stack/stack",
+			"Comment": "v1.5.2",
+			"Rev": "100eb0c0a9c5b306ca2fb4f165df21d80ada4b82"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.1-24-g0b13a92",
+			"Rev": "0b13a922203ebdbfd236c818efcd5ed46097d690"
+		},
+		{
+			"ImportPath": "github.com/kr/logfmt",
+			"Rev": "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
+		},
+		{
+			"ImportPath": "github.com/rcrowley/go-metrics",
+			"Rev": "bdb33529eca3e55eac7328e07c57012a797af602"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "9bc2a3340c92c17a20edcd0080e93851ed58f5d5"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context/ctxhttp",
+			"Rev": "9bc2a3340c92c17a20edcd0080e93851ed58f5d5"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "a646d33e2ee3172a661fc09bca23bb4889a41bc8"
+		}
+	]
+}

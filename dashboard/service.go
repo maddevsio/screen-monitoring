@@ -1,19 +1,19 @@
 package dashboard
 
 import (
-	"sync"
 	"encoding/json"
+	"sync"
 )
 
 type Widget struct {
-	ID string `json:"id"`
-	Width int `json:"width"`
-	Height int `json:"height"`
+	ID      string `json:"id"`
+	Width   int    `json:"width"`
+	Height  int    `json:"height"`
 	Content string `json:"content"`
 }
 
 func (w *Widget) ToJson() ([]byte, error) {
-	 return json.Marshal(w)
+	return json.Marshal(w)
 }
 
 type PageContent struct {
@@ -29,17 +29,17 @@ type DashboardService interface {
 	Register(widget Widget) (pr RegisterResponse, err error)
 }
 
-type dashboardService struct{
+type dashboardService struct {
 	registeredWidgets map[string]Widget
 	sync.RWMutex
 }
 
 func NewDashboardService() DashboardService {
-	return &dashboardService{registeredWidgets: make(map[string]Widget,0)}
+	return &dashboardService{registeredWidgets: make(map[string]Widget, 0)}
 }
 
 func (d dashboardService) GetPages() (pc PageContent, err error) {
-	result := make([]Widget,0)
+	result := make([]Widget, 0)
 
 	for _, v := range d.registeredWidgets {
 		result = append(result, v)
@@ -56,7 +56,7 @@ func (d *dashboardService) Register(widget Widget) (pr RegisterResponse, err err
 	d.Lock()
 	defer d.Unlock()
 	d.registeredWidgets[widget.ID] = widget
-	pr = RegisterResponse{Success:true}
+	pr = RegisterResponse{Success: true}
 	err = nil
 	return
 }
