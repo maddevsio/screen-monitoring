@@ -31,9 +31,6 @@ class App extends React.Component {
              fetch('/dashboard/v1/pages')
                          .then((response) => response.json())
                          .then(self.receiveResponse)
-                         .then(function (){
-                            setTimeout(self._grabInfo, INTERVAL);
-                         })
                          .catch((ex) => {
                              console.error(ex);
                              setTimeout(self._grabInfo, INTERVAL);
