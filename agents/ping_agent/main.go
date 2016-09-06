@@ -11,36 +11,16 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
-	"regexp"
+	//"os/exec"
+	//"regexp"
+	"github.com/maddevsio/screen-monitoring/agents/ping_agent/agent"
 )
-
-type AgentService interface {
-	CheckResponseTime(string) string
-}
-
-type agentService struct{}
 
 type Settings struct {
 	ID      string `json:"id"`
 	Width   int    `json:"width"`
 	Height  int    `json:"height"`
 	Content string `json:"content"`
-}
-
-func (agentService) CheckResponseTime(url string) string {
-	cmd := exec.Command("ping", "-c 1", url)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := out.String()
-	re, _ := regexp.Compile(`\stime=(.*)\n`)
-	info := re.FindStringSubmatch(data)
-
-	return info[1]
 }
 
 func AgentRegistration(url, hostname, gauge string) {
@@ -83,9 +63,8 @@ func main() {
 		hostName     = flag.String("targetHost", targetHost, "Target hostname and port")
 
 		ctx = context.Background()
-		svc = agentService{}
+		svc = agent.NewService()
 	)
-
 	flag.Parse()
 
 	timeTotal := svc.CheckResponseTime(*hostName)
@@ -102,7 +81,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(*httpAddr, nil))
 }
 
-func makeCheckResponseTimeEndpoint(svc AgentService) endpoint.Endpoint {
+func makeCheckResponseTimeEndpoint(svc agent.AgentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(checkResponseTimeRequest)
 		timeTotal := svc.CheckResponseTime(req.URL)
