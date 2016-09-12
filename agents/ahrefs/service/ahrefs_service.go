@@ -5,6 +5,7 @@ import (
 	"github.com/ddliu/go-httpclient"
 	"golang.org/x/net/html"
 	"log"
+	"net/http"
 )
 
 type AhrefsService interface {
@@ -27,11 +28,38 @@ func getElementByName(name string, n *html.Node) (element *html.Node, ok bool) {
 	return
 }
 
+func getElementId(id string, n *html.Node) (element *html.Node, ok bool) {
+	for _, a := range n.Attr {
+		if a.Key == "id" && a.Val == id {
+			return n, true
+		}
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if element, ok = getElementByName(id, c); ok {
+			return
+		}
+	}
+	return
+}
+
 func (ahrefsService) SignIn(email, password string) string {
 	response, _ := httpclient.Defaults(httpclient.Map{httpclient.OPT_DEBUG: true}).
 		WithHeader("Accept-Language", "en-us").
 		WithHeader("Referer", "https://ahrefs.com/").
 		Get("https://ahrefs.com/", nil)
+
+	csrf_token := ""
+	ahrefs_cookie := ""
+	fmt.Println("*** Cookies GET")
+	for k, v := range httpclient.CookieValues("https://ahrefs.com/") {
+		fmt.Printf("*%s : %s\n", k, v)
+		if k == "XSRF-TOKEN" {
+			csrf_token = v
+		}
+		if k == "ahrefs_cookie" {
+			ahrefs_cookie = v
+		}
+	}
 
 	root, _ := html.Parse(response.Body)
 	element, _ := getElementByName("_token", root)
@@ -103,14 +131,14 @@ func (ahrefsService) SignIn(email, password string) string {
 		WithHeader("referer", "https://ahrefs.com/user/login").
 		WithHeader("pragma", "no-cache").
 		WithHeader("User-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36").
-		//WithCookie(&http.Cookie{
-		//	Name: "XSRF-TOKEN",
-		//	Value: csrf_token,
-		//}).
-		//	WithCookie(&http.Cookie{
-		//	Name: "ahrefs_cookie",
-		//	Value: ahrefs_cookie,
-		//}).
+		WithCookie(&http.Cookie{
+			Name:  "XSRF-TOKEN",
+			Value: csrf_token,
+		}).
+		WithCookie(&http.Cookie{
+			Name:  "ahrefs_cookie",
+			Value: ahrefs_cookie,
+		}).
 		Get("https://ahrefs.com/dashboard/metrics", nil)
 
 	if err != nil {
@@ -122,8 +150,14 @@ func (ahrefsService) SignIn(email, password string) string {
 	log.Println(response.Response)
 
 	defer response.Body.Close()
-
-	return string(response.StatusCode)
+	root, _ = html.Parse(response.Body)
+	username, _ := getElementId("userAccountOptions", root)
+	is_loggedin := "false"
+	if username != nil {
+		is_loggedin = "true"
+	}
+	log.Println(username)
+	return string(is_loggedin)
 }
 
 func NewService() ahrefsService {
