@@ -73,7 +73,7 @@ func main() {
 	)
 
 	flag.Parse()
-	loginStatus := svc.SignIn(*ahrefsEmail, *ahrefsPassword)
+	loginStatus := svc.SignInAndGetDashboard(*ahrefsEmail, *ahrefsPassword)
 	log.Println(loginStatus)
 	metrics_data := "No data" // Implement parsing data from ahrefs dashboard
 	AgentRegistration(*dashboardURL, *ahrefsProject, metrics_data)

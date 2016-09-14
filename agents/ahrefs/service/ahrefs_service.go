@@ -17,7 +17,7 @@ type AhrefsService interface {
 type ahrefsService struct{}
 
 
-func (ahrefsService) SignIn(email, password string) string {
+func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool) string {
 	easy := curl.EasyInit()
 	token := ""
 	receivedHTML := ""
@@ -38,7 +38,7 @@ func (ahrefsService) SignIn(email, password string) string {
 	easy.Setopt(curl.OPT_SSL_VERIFYPEER, 1)
 	easy.Setopt(curl.OPT_WRITEFUNCTION, fooTest)
 	easy.Setopt(curl.OPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
-	easy.Setopt(curl.OPT_VERBOSE, 1)
+	easy.Setopt(curl.OPT_VERBOSE, verbose)
 	easy.Setopt(curl.OPT_FOLLOWLOCATION, 1)
 	easy.Setopt(curl.OPT_COOKIEJAR, "./cookiejar")
 	easy.Setopt(curl.OPT_COOKIEFILE, "./cookiejar")
@@ -47,11 +47,12 @@ func (ahrefsService) SignIn(email, password string) string {
 
 	// lame and stupid method, but we have only callback for receiving data from curl_easy
 	if strings.Contains(receivedHTML, "<strong>Dashboard") {
-		return "true"
+		return receivedHTML
 	}
+
 	receivedHTML = ""
 
-	//second call
+	//second call in we need it (after first call we can be in Dashboard, thanks to cookieJar)
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_HTTPHEADER, []string{
 		"Referer: https://ahrefs.com/user/login",
@@ -72,7 +73,7 @@ func (ahrefsService) SignIn(email, password string) string {
 	easy.Setopt(curl.OPT_POSTFIELDS, postFields)
 	easy.Perform()
 
-	return "true"
+	return receivedHTML
 }
 
 func getToken(body []byte) (string, bool) {

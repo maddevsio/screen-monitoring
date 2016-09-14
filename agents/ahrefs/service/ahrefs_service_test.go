@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"testing"
+	"strings"
 )
 
 func TestLogin(t *testing.T) {
@@ -16,10 +17,10 @@ func TestLogin(t *testing.T) {
 	)
 
 	svc := ahrefsService{}
-	result := svc.SignIn(*ahrefsEmail, *ahrefsPassword)
+	result := svc.SignInAndGetDashboard(*ahrefsEmail, *ahrefsPassword, false)
 
-	if result != "true" {
-		t.Errorf("Expected to be true. Got %s", result)
+	if !strings.Contains(result, "<strong>Dashboard") {
+		t.Error("Expected to be in Dashboard", nil)
 	}
 }
 
