@@ -25,8 +25,7 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 
 	getContent := func(body []byte, userdata interface{}) bool {
 		receivedHTML += string(body)
-		data, exists := getToken(body)
-		if exists {
+		if data, exists := getToken(body); exists { // potential bug: we can receive chunk with a sliced token
 			token = data
 		}
 
