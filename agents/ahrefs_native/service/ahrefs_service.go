@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
-	"golang.org/x/net/publicsuffix"
 )
 
 type AhrefsService interface {
@@ -23,8 +21,8 @@ type ahrefsService struct{}
 
 var client *http.Client
 
-func makeRequest(method string, reader io.Reader) ([]byte, error) {
-	req, err := http.NewRequest(method, "https://ahrefs.com/user/login", reader)
+func makeRequest(method, url string, reader io.Reader) ([]byte, error) {
+	req, err := http.NewRequest(method, url, reader)
 
 	if err != nil {
 		return nil, err
@@ -51,9 +49,7 @@ func makeRequest(method string, reader io.Reader) ([]byte, error) {
 	return data, nil
 }
 func (ahrefsService) SignIn(email, password string) error {
-	cJar, err := cookiejar.New(&cookiejar.Options{
-		PublicSuffixList: publicsuffix.List,
-	})
+	cJar, err := cookiejar.New(nil)
 	if err != nil {
 		return err
 	}
@@ -62,20 +58,19 @@ func (ahrefsService) SignIn(email, password string) error {
 		Jar: cJar,
 	}
 	token := ""
-	data, err := makeRequest("GET", nil)
+	data, err := makeRequest("GET", "https://ahrefs.com/user/login", nil)
 	if err != nil {
 		return err
 	}
 	re := regexp.MustCompile(`.*<meta name="_token" content="(.*)" />.*`)
 	token = re.FindStringSubmatch(string(data))[1]
-	fmt.Println(token)
 
 	form := url.Values{}
 	form.Add("_token", token)
 	form.Add("email", email)
 	form.Add("password", password)
 	form.Add("return_to", "https://ahrefs.com/")
-	data, err = makeRequest("POST", strings.NewReader(form.Encode()))
+	data, err = makeRequest("POST", "https://ahrefs.com/user/login", strings.NewReader(form.Encode()))
 	if err != nil {
 		return err
 	}
