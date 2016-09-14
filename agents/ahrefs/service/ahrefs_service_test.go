@@ -7,7 +7,6 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-
 	var (
 		email    = envString("AHREFS_EMAIL", "test@mail.com")
 		password = envString("AHREFS_PASSWORD", "password")
