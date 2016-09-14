@@ -7,6 +7,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"net/url"
 	"fmt"
+	"strings"
 )
 
 type AhrefsService interface {
@@ -19,9 +20,11 @@ type ahrefsService struct{}
 func (ahrefsService) SignIn(email, password string) string {
 	easy := curl.EasyInit()
 	token := ""
+	receivedHTML := ""
 	defer easy.Cleanup()
 
 	fooTest := func(body []byte, userdata interface{}) bool {
+		receivedHTML += string(body)
 		data, exists := getToken(body)
 		if exists {
 			token = data
@@ -42,8 +45,13 @@ func (ahrefsService) SignIn(email, password string) string {
 	easy.Setopt(curl.OPT_NOBODY, 0)
 	easy.Perform()
 
-	//second call
+	// lame and stupid method, but we have only callback for receiving data from curl_easy
+	if strings.Contains(receivedHTML, "<strong>Dashboard") {
+		return "true"
+	}
+	receivedHTML = ""
 
+	//second call
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_HTTPHEADER, []string{
 		"Referer: https://ahrefs.com/user/login",
