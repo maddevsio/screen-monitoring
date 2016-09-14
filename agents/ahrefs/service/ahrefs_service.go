@@ -1,11 +1,12 @@
 package service
 
 import (
-	"fmt"
 	"golang.org/x/net/html"
 	curl "github.com/andelf/go-curl"
 	"bytes"
+	"github.com/PuerkitoBio/goquery"
 	"net/url"
+	"fmt"
 )
 
 type AhrefsService interface {
@@ -21,17 +22,11 @@ func (ahrefsService) SignIn(email, password string) string {
 	defer easy.Cleanup()
 
 	fooTest := func(body []byte, userdata interface{}) bool {
-		//fmt.Print(string(body))
-		root, _ := html.Parse(bytes.NewReader(body))
-		element, _ := getElementByName("_token", root)
-		if element != nil {
-			for _, a := range element.Attr {
-				if a.Key == "value" {
-					token = a.Val
-				}
-			}
-			//fmt.Print("Token = " + token + "\n")
+		data, exists := getToken(body)
+		if exists {
+			token = data
 		}
+
 		return true
 	}
 
@@ -48,6 +43,7 @@ func (ahrefsService) SignIn(email, password string) string {
 	easy.Perform()
 
 	//second call
+
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_HTTPHEADER, []string{
 		"Referer: https://ahrefs.com/user/login",
@@ -68,39 +64,25 @@ func (ahrefsService) SignIn(email, password string) string {
 	easy.Setopt(curl.OPT_POSTFIELDS, postFields)
 	easy.Perform()
 
-
 	return "true"
+}
+
+func getToken(body []byte) (string, bool) {
+	rootNode, err := html.Parse(bytes.NewReader(body))
+	if err != nil {
+		return "", false
+	}
+
+	meta := goquery.NewDocumentFromNode(rootNode).Find("meta[name=_token]")
+	token, exists := meta.Attr("content")
+	if exists == false {
+		return "", false
+	}
+
+	return token, true
+
 }
 
 func NewService() ahrefsService {
 	return ahrefsService{}
 }
-
-func getElementByName(name string, n *html.Node) (element *html.Node, ok bool) {
-	for _, a := range n.Attr {
-		if a.Key == "name" && a.Val == name {
-			return n, true
-		}
-	}
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if element, ok = getElementByName(name, c); ok {
-			return
-		}
-	}
-	return
-}
-
-func getElementId(id string, n *html.Node) (element *html.Node, ok bool) {
-	for _, a := range n.Attr {
-		if a.Key == "id" && a.Val == id {
-			return n, true
-		}
-	}
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if element, ok = getElementByName(id, c); ok {
-			return
-		}
-	}
-	return
-}
-
