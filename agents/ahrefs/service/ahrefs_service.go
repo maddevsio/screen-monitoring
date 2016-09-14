@@ -23,7 +23,7 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 	receivedHTML := ""
 	defer easy.Cleanup()
 
-	fooTest := func(body []byte, userdata interface{}) bool {
+	getContent := func(body []byte, userdata interface{}) bool {
 		receivedHTML += string(body)
 		data, exists := getToken(body)
 		if exists {
@@ -36,7 +36,7 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 	//first call
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_SSL_VERIFYPEER, 1)
-	easy.Setopt(curl.OPT_WRITEFUNCTION, fooTest)
+	easy.Setopt(curl.OPT_WRITEFUNCTION, getContent)
 	easy.Setopt(curl.OPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
 	easy.Setopt(curl.OPT_VERBOSE, verbose)
 	easy.Setopt(curl.OPT_FOLLOWLOCATION, 1)
