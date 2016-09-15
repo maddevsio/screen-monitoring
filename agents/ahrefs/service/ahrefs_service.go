@@ -51,6 +51,8 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 
 	receivedHTML = ""
 
+	fmt.Println("second request")
+
 	//second call in we need it (after first call we can be in Dashboard, thanks to cookieJar)
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_HTTPHEADER, []string{
