@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+func init() {
+	os.Remove("./cookiejar")
+}
+
 func TestLogin(t *testing.T) {
 	var (
 		email    = envString("AHREFS_EMAIL", "test@mail.com")
