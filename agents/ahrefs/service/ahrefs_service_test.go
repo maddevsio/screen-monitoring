@@ -21,7 +21,7 @@ func TestLogin(t *testing.T) {
 	)
 
 	svc := ahrefsService{}
-	result := svc.SignInAndGetDashboard(*ahrefsEmail, *ahrefsPassword, false)
+	result := svc.SignInAndGetDashboard(*ahrefsEmail, *ahrefsPassword, true)
 
 	if !strings.Contains(result, "<strong>Dashboard") {
 		t.Error("Expected to be in Dashboard", nil)

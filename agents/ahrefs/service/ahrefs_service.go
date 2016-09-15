@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"github.com/PuerkitoBio/goquery"
 	"net/url"
-	"fmt"
 	"strings"
 )
 
@@ -34,6 +33,7 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 
 	//first call
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
+	easy.Setopt(curl.OPT_ACCEPT_ENCODING, "gzip")
 	easy.Setopt(curl.OPT_SSL_VERIFYPEER, 1)
 	easy.Setopt(curl.OPT_WRITEFUNCTION, getContent)
 	easy.Setopt(curl.OPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
@@ -51,25 +51,23 @@ func (ahrefsService) SignInAndGetDashboard(email, password string, verbose bool)
 
 	receivedHTML = ""
 
-	fmt.Println("second request")
-
 	//second call in we need it (after first call we can be in Dashboard, thanks to cookieJar)
 	easy.Setopt(curl.OPT_URL, "https://ahrefs.com/user/login")
 	easy.Setopt(curl.OPT_HTTPHEADER, []string{
 		"Referer: https://ahrefs.com/user/login",
 		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 		"Accept-Language: en-US,en;q=0.5",
-		"Accept-Encoding: gzip, deflate",
 		"Connection: keep-alive",
 	})
 	easy.Setopt(curl.OPT_POST, 1)
+
 	form := url.Values{}
 	form.Add("_token",    token)
 	form.Add("email",     email)
 	form.Add("password",  password)
 	form.Add("return_to", "https://ahrefs.com/")
 	postFields := form.Encode()
-	fmt.Print(postFields + "\n")
+
 	easy.Setopt(curl.OPT_POSTFIELDSIZE, len(postFields))
 	easy.Setopt(curl.OPT_POSTFIELDS, postFields)
 	easy.Perform()
