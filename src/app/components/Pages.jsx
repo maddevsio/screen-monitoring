@@ -1,5 +1,5 @@
 import React from 'react';
-import Page from './Page.jsx';
+import Preview from './Preview.jsx';
 
 class Pages extends React.Component {
     constructor(props) {
@@ -10,7 +10,7 @@ class Pages extends React.Component {
 
         this.renderPages = () => {
                return this.state.pages.map((page, index) => {
-                   return <Page {...page} key={index} />
+                   return <Preview {...page} key={index} />
                })
         }
     }

@@ -10,6 +10,7 @@ type Widget struct {
 	Width   int    `json:"width"`
 	Height  int    `json:"height"`
 	Content string `json:"content"`
+	Url     string `json:"url"`
 }
 
 func (w *Widget) ToJson() ([]byte, error) {
