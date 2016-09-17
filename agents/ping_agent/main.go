@@ -11,9 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	//"os/exec"
-	//"regexp"
-	"github.com/maddevsio/screen-monitoring/agents/ping_agent/agent"
+	"github.com/maddevsio/screen-monitoring/agents/ping_agent/service"
 )
 
 type Settings struct {
@@ -63,7 +61,7 @@ func main() {
 		hostName     = flag.String("targetHost", targetHost, "Target hostname and port")
 
 		ctx = context.Background()
-		svc = agent.NewService()
+		svc = service.NewService()
 	)
 	flag.Parse()
 
@@ -81,7 +79,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(*httpAddr, nil))
 }
 
-func makeCheckResponseTimeEndpoint(svc agent.AgentService) endpoint.Endpoint {
+func makeCheckResponseTimeEndpoint(svc service.AgentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(checkResponseTimeRequest)
 		timeTotal := svc.CheckResponseTime(req.URL)
