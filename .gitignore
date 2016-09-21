@@ -74,3 +74,5 @@ jspm_packages
 public/
 screen-monitoring
 /screen-monitoring.iml
+
+dashboard/*.db
