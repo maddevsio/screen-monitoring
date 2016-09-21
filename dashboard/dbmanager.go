@@ -5,21 +5,24 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var DbManagerInstance *DbManager
+type DatabaseManager interface {
+	InsertWidget(widget *Widget) (int64, error)
+	Close() error
+}
 
-func init(){
-	DbManagerInstance = &DbManager{}
-	DbManagerInstance.initDb()
+func NewDbManager(path string) DatabaseManager {
+	return &DbManager{path: path}
 }
 
 type DbManager struct {
 	db *sql.DB
+	path string
 }
 
 func (m *DbManager) Db() (*sql.DB, error) {
 	var err error
 	if m.db == nil {
-		m.db, err = sql.Open("sqlite3", "./screen_monitoring.db")
+		m.db, err = sql.Open("sqlite3", m.path)
 		if err != nil {
 			return nil, err
 		}
@@ -29,34 +32,16 @@ func (m *DbManager) Db() (*sql.DB, error) {
 
 func (m *DbManager) Close() error {
 	if m.db != nil {
-		return m.db.Close()
-	}
-	return nil
-}
-
-func (m *DbManager) initDb() error {
-	createWidgetsTable := `
-		CREATE TABLE IF NOT EXISTS widgets (
-			id	TEXT NOT NULL UNIQUE,
-			width	INTEGER NOT NULL DEFAULT 300,
-			height	INTEGER NOT NULL DEFAULT 300,
-			url	TEXT NOT NULL,
-			content	TEXT,
-			PRIMARY KEY(id)
-		);
-	`
-	db, err := m.Db()
-	if err != nil {
+		err := m.db.Close()
 		return err
 	}
-	_, err = db.Exec(createWidgetsTable)
-	return err
+	return nil
 }
 
 func (m *DbManager) InsertWidget(widget *Widget) (int64, error) {
 	insertQuery := `
 		INSERT INTO widgets (id,url,width,height)
-		VALUES (?,?,?);
+		VALUES (?,?,?,?);
 	`
 	db, err := m.Db()
 	if err != nil {
@@ -66,5 +51,6 @@ func (m *DbManager) InsertWidget(widget *Widget) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return res.RowsAffected()
 }
