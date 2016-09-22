@@ -7,6 +7,7 @@ import (
 
 type DatabaseManager interface {
 	InsertWidget(widget *Widget) (int64, error)
+	InsertOrUpdateWidget(widget *Widget) (int64, error)
 	Close() error
 }
 
@@ -48,6 +49,23 @@ func (m *DbManager) InsertWidget(widget *Widget) (int64, error) {
 		return 0, err
 	}
 	res, err := db.Exec(insertQuery, widget.ID, widget.Url, widget.Width, widget.Height)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (m *DbManager) InsertOrUpdateWidget(widget *Widget) (int64, error) {
+	insertOrReplace := `
+		INSERT OR REPLACE INTO widgets (id,url,width,height)
+		VALUES (?,?,?,?);
+	`
+	db, err := m.Db()
+	if err != nil {
+		return 0, err
+	}
+	res, err := db.Exec(insertOrReplace, widget.ID, widget.Url, widget.Width, widget.Height)
 	if err != nil {
 		return 0, err
 	}
