@@ -40,6 +40,41 @@ func TestDbManager(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, int64(1), count)
 	})
+	t.Run("Should return all widgets", func(t *testing.T) {
+		var widget = &Widget{Url:"http://example.com", ID:"test_widget_1", Height:350, Width:400}
+		var widget2 = &Widget{Url:"http://some.site.com", ID:"test_widget_2", Height:450, Width:310}
+		var expected = []*Widget{widget, widget2}
+		dbManager.InsertWidget(widget)
+		dbManager.InsertWidget(widget2)
+		actual, err := dbManager.GetAll(10,0)
+		assert.Nil(t, err)
+		assert.InEpsilonSlice(t, expected, actual, float64(0))
+	})
+	t.Run("Should return valid count rows per page", func(t *testing.T) {
+		var widget1 = &Widget{Url:"http://example.com", ID:"l_test_widget_1", Height:350, Width:400}
+		var widget2 = &Widget{Url:"http://some.site1.com", ID:"j_test_widget_2", Height:450, Width:310}
+		var widget3 = &Widget{Url:"http://some.site2.com", ID:"a_test_widget_3", Height:450, Width:310}
+		var widget4 = &Widget{Url:"http://some.site3.com", ID:"s_test_widget_4", Height:450, Width:310}
+		var widget5 = &Widget{Url:"http://some.site4.com", ID:"f_test_widget_5", Height:450, Width:310}
+		var widget6 = &Widget{Url:"http://some.site5.com", ID:"e_test_widget_6", Height:450, Width:310}
+		var widget7 = &Widget{Url:"http://some.site6.com", ID:"b_test_widget_7", Height:450, Width:310}
+		var widget8 = &Widget{Url:"http://some.site7.com", ID:"c_test_widget_8", Height:450, Width:310}
+		var all = []*Widget{widget1, widget2, widget3, widget4, widget5, widget6, widget7, widget8}
+		var expected = []*Widget{widget1, widget2, widget3, widget4}
+		for _, widget := range all {
+			dbManager.InsertWidget(widget)
+		}
+		actual, err := dbManager.GetAll(4,0)
+		assert.Nil(t, err)
+		assert.InEpsilonSlice(t, expected, actual, float64(0))
+	})
+
+	t.Run("Should return empty array if now wigets in db", func(t *testing.T) {
+		actual, err := dbManager.GetAll(4,0)
+		assert.Nil(t, err)
+		assert.Empty(t, actual)
+	})
+
 	errors, ok = dbMigrator.Down()
 	if !ok {
 		t.Fatal("Migrations Down: ", errors)

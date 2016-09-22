@@ -6,6 +6,7 @@ import (
 )
 
 type DatabaseManager interface {
+	GetAll(pageSize, offset int) (result []Widget, err error)
 	InsertWidget(widget *Widget) (int64, error)
 	InsertOrUpdateWidget(widget *Widget) (int64, error)
 	Close() error
@@ -71,4 +72,25 @@ func (m *DbManager) InsertOrUpdateWidget(widget *Widget) (int64, error) {
 	}
 
 	return res.RowsAffected()
+}
+
+func (m *DbManager) GetAll(pageSize, offset int) (result []Widget, err error) {
+	selectAllWithPaging := `
+		SELECT * FROM widgets LIMIT ?,?;
+	`
+	db, err := m.Db()
+	if err != nil {
+		return
+	}
+	rows, err := db.Query(selectAllWithPaging, pageSize, offset)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var row Widget
+		rows.Scan(&row)
+		result = append(result, row)
+	}
+	return
 }
