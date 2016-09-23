@@ -14,6 +14,7 @@ type Migrator interface {
 
 type DbMigration struct {
 	dbname string
+	migratePath string
 }
 
 func (dbm *DbMigration) Up() ([]error, bool) {
@@ -26,6 +27,9 @@ func (dbm *DbMigration) Down() ([]error, bool) {
 	return migrate.DownSync(dbConnString, "./migrations")
 }
 
-func NewMigrator(dbname string) Migrator {
-	return &DbMigration{dbname:dbname}
+func NewMigrator(dbname, migratePath string) Migrator {
+	return &DbMigration{
+		dbname:dbname,
+		migratePath: migratePath,
+	}
 }

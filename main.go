@@ -20,8 +20,12 @@ func main() {
 	requestCount := gometrics.NewCounter()
 	requestLatency := gometrics.NewHistogram(gometrics.NewUniformSample(100))
 	countResult := gometrics.NewHistogram(gometrics.NewUniformSample(100))
+
+	dashboardDbManager := dashboard.NewDbManager("screen_monitoring")
+	dashboardMigrator := dashboard.NewMigrator("screen_monitoring", "./dashboard/migrations")
+
 	var svc dashboard.DashboardService
-	svc = dashboard.NewDashboardService()
+	svc = dashboard.NewDashboardService(dashboardMigrator, dashboardDbManager)
 	svc = dashboard.NewLoggerService(logger, svc)
 	svc = dashboard.NewInstrumentingMiddleware(
 		requestCount,
@@ -29,6 +33,7 @@ func main() {
 		countResult,
 		svc,
 	)
+	svc.Init()
 
 	mux := http.NewServeMux()
 	mux.Handle("/dashboard/v1/", dashboard.MakeHandler(ctx, svc, logger))

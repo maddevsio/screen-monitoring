@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	dbMigrator = NewMigrator("test.db")
+	dbMigrator = NewMigrator("test.db", "./migrations")
 	dbManager = NewDbManager("test.db")
 )
 

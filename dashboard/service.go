@@ -28,36 +28,44 @@ type RegisterResponse struct {
 type DashboardService interface {
 	GetPages() (pc PageContent, err error)
 	Register(widget Widget) (pr RegisterResponse, err error)
+	Init() ([]error, bool)
 }
 
 type dashboardService struct {
-	registeredWidgets map[string]Widget
 	sync.RWMutex
+	migrator Migrator
+	dbManager DatabaseManager
 }
 
-func NewDashboardService() DashboardService {
-	return &dashboardService{registeredWidgets: make(map[string]Widget, 0)}
+func NewDashboardService(migrator Migrator, dbManager DatabaseManager) DashboardService {
+	return &dashboardService{
+		migrator: migrator,
+		dbManager: dbManager,
+	}
+}
+
+func (d dashboardService) Init() ([]error, bool) {
+	return d.migrator.Up()
 }
 
 func (d dashboardService) GetPages() (pc PageContent, err error) {
-	result := make([]Widget, 0)
-
-	for _, v := range d.registeredWidgets {
-		result = append(result, v)
-	}
-
+	d.Lock()
+	defer d.Unlock()
+	widgets, err := d.dbManager.GetAll(10,0)
 	pc = PageContent{
-		Widgets: result,
+		Widgets: widgets,
 	}
-	err = nil
 	return
 }
 
 func (d *dashboardService) Register(widget Widget) (pr RegisterResponse, err error) {
 	d.Lock()
 	defer d.Unlock()
-	d.registeredWidgets[widget.ID] = widget
-	pr = RegisterResponse{Success: true}
-	err = nil
+	_, err = d.dbManager.InsertOrUpdateWidget(&widget)
+	if err != nil {
+		pr = RegisterResponse{Success: true}
+		return
+	}
+	pr = RegisterResponse{Success: false}
 	return
 }

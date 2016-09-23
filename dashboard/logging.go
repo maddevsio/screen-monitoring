@@ -42,3 +42,19 @@ func (mw loggingMiddleware) Register(widget Widget) (pr RegisterResponse, err er
 	}(time.Now())
 	return
 }
+
+func (mw loggingMiddleware) Init() (initErrors []error, ok bool) {
+	initErrors, ok = mw.next.Init()
+	defer func(begin time.Time) {
+		for _, err := range initErrors {
+			_ = mw.logger.Log(
+				"method", "Init",
+				"input", "No params",
+				"output", ok,
+				"err", err,
+				"took", time.Since(begin),
+			)
+		}
+	}(time.Now())
+	return
+}
