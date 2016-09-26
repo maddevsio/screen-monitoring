@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS `pages` (
+	`title`	TEXT NOT NULL UNIQUE,
+	`visibile`	INTEGER NOT NULL DEFAULT 0
+);
