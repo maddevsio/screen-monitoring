@@ -1,25 +1,8 @@
 package dashboard
 
 import (
-	"encoding/json"
 	"sync"
 )
-
-type Widget struct {
-	ID      string `json:"id"`
-	Width   int    `json:"width"`
-	Height  int    `json:"height"`
-	Content string `json:"content"`
-	Url     string `json:"url"`
-}
-
-func (w *Widget) ToJson() ([]byte, error) {
-	return json.Marshal(w)
-}
-
-type PageContent struct {
-	Widgets []Widget `json:"widgets"`
-}
 
 type RegisterResponse struct {
 	Success bool
