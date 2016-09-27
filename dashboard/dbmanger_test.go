@@ -75,6 +75,23 @@ func TestDbManager(t *testing.T) {
 		assert.Empty(t, actual)
 	})
 
+	t.Run("Should success create page", func(t *testing.T) {
+		var page = &Page{Title:"Page 1", Visible:true}
+		count, err := dbManager.InsertPage(page)
+		assert.Equal(t, int64(1), count)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Should not insert page with same title", func(t *testing.T) {
+		var page = &Page{Title:"Page 1", Visible:true}
+		var page2 = &Page{Title:"Page 1", Visible:true}
+		dbManager.InsertPage(page)
+		count, err := dbManager.InsertPage(page2)
+		assert.NotNil(t, err)
+		assert.Equal(t, "UNIQUE constraint failed: pages.title", err.Error())
+		assert.Equal(t, int64(0), count)
+	})
+
 	errors, ok = dbMigrator.Down()
 	if !ok {
 		t.Fatal("Migrations Down: ", errors)

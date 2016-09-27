@@ -3,12 +3,14 @@ package dashboard
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"fmt"
 )
 
 type DatabaseManager interface {
 	GetAll(pageSize, offset int) (result []Widget, err error)
 	InsertWidget(widget *Widget) (int64, error)
 	InsertOrUpdateWidget(widget *Widget) (int64, error)
+	InsertPage(page *Page) (int64, error)
 	Close() error
 }
 
@@ -93,4 +95,21 @@ func (m *DbManager) GetAll(pageSize, offset int) (result []Widget, err error) {
 		result = append(result, row)
 	}
 	return
+}
+
+func (m *DbManager) InsertPage(page *Page) (int64, error) {
+	insertOrReplace := `
+		INSERT INTO pages (title,visible)
+		VALUES (?,?);
+	`
+	db, err := m.Db()
+	if err != nil {
+		return 0, err
+	}
+	res, err := db.Exec(insertOrReplace, page.Title, page.Visible)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
 }
