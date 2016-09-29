@@ -11,6 +11,7 @@ type DatabaseManager interface {
 	InsertWidget(widget *Widget) (int64, error)
 	InsertOrUpdateWidget(widget *Widget) (int64, error)
 	InsertPage(page *Page) (int64, error)
+	UpdatePage(page *Page) (int64, error)
 	Close() error
 }
 
@@ -110,6 +111,20 @@ func (m *DbManager) InsertPage(page *Page) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	return res.LastInsertId()
+}
 
+func (m *DbManager) UpdatePage(page *Page) (int64, error) {
+	insertOrReplace := `
+		UPDATE pages SET title=? SET visible=? WHERE id = ?
+	`
+	db, err := m.Db()
+	if err != nil {
+		return 0, err
+	}
+	res, err := db.Exec(insertOrReplace, page.Title, page.Visible, page.Id)
+	if err != nil {
+		return 0, err
+	}
 	return res.RowsAffected()
 }
