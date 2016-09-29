@@ -116,7 +116,7 @@ func (m *DbManager) InsertPage(page *Page) (int64, error) {
 
 func (m *DbManager) UpdatePage(page *Page) (int64, error) {
 	insertOrReplace := `
-		UPDATE pages SET title=? SET visible=? WHERE id = ?
+		UPDATE pages SET title=?, visible=? WHERE id = ?
 	`
 	db, err := m.Db()
 	if err != nil {

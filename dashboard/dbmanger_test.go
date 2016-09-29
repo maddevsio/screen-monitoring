@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -90,18 +91,18 @@ func TestDbManager(t *testing.T) {
 		count, err := dbManager.InsertPage(page2)
 		assert.NotNil(t, err)
 		assert.Equal(t, "UNIQUE constraint failed: pages.title", err.Error())
-		assert.True(t, count > 0)
+		assert.Equal(t, int64(0), count)
 	})
 
 	t.Run("Should update page by id", func(t *testing.T) {
-		var page = &Page{Title: "Page 1", Visible: true}
+		var page = &Page{Title: "Page 2", Visible: true}
 		id, err := dbManager.InsertPage(page)
+		fmt.Println("ROW ID: ", id, err)
 		page.Id = id
 		page.Visible = false
 		page.Title = "Page title changed"
 		count, err := dbManager.UpdatePage(page)
-		assert.NotNil(t, err)
-		assert.Equal(t, "UNIQUE constraint failed: pages.title", err.Error())
+		assert.Nil(t, err)
 		assert.Equal(t, int64(1), count)
 	})
 
