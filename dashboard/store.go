@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"sync"
 	"time"
+
+	"github.com/boltdb/bolt"
 )
 
 type WidgetStore struct {

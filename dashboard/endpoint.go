@@ -2,9 +2,10 @@ package dashboard
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/go-kit/kit/endpoint"
 	"golang.org/x/net/context"
-	"net/http"
 )
 
 func makePagesEndpoint(svc DashboardService) endpoint.Endpoint {

@@ -1,11 +1,11 @@
 package dashboard
 
 import (
-	"github.com/mattes/migrate/migrate"
-	_ "github.com/mattes/migrate/driver/sqlite3"
 	"fmt"
-)
 
+	_ "github.com/mattes/migrate/driver/sqlite3"
+	"github.com/mattes/migrate/migrate"
+)
 
 type Migrator interface {
 	Up() ([]error, bool)
@@ -13,7 +13,7 @@ type Migrator interface {
 }
 
 type DbMigration struct {
-	dbname string
+	dbname      string
 	migratePath string
 }
 
@@ -29,7 +29,7 @@ func (dbm *DbMigration) Down() ([]error, bool) {
 
 func NewMigrator(dbname, migratePath string) Migrator {
 	return &DbMigration{
-		dbname:dbname,
+		dbname:      dbname,
 		migratePath: migratePath,
 	}
 }

@@ -2,8 +2,8 @@ package dashboard
 
 import (
 	"database/sql"
+
 	_ "github.com/mattn/go-sqlite3"
-	"fmt"
 )
 
 type DatabaseManager interface {
@@ -19,7 +19,7 @@ func NewDbManager(path string) DatabaseManager {
 }
 
 type DbManager struct {
-	db *sql.DB
+	db   *sql.DB
 	path string
 }
 

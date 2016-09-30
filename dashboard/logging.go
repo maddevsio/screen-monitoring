@@ -2,8 +2,9 @@ package dashboard
 
 import (
 	"fmt"
-	"github.com/go-kit/kit/log"
 	"time"
+
+	"github.com/go-kit/kit/log"
 )
 
 type loggingMiddleware struct {

@@ -16,13 +16,13 @@ type DashboardService interface {
 
 type dashboardService struct {
 	sync.RWMutex
-	migrator Migrator
+	migrator  Migrator
 	dbManager DatabaseManager
 }
 
 func NewDashboardService(migrator Migrator, dbManager DatabaseManager) DashboardService {
 	return &dashboardService{
-		migrator: migrator,
+		migrator:  migrator,
 		dbManager: dbManager,
 	}
 }
@@ -34,7 +34,7 @@ func (d dashboardService) Init() ([]error, bool) {
 func (d dashboardService) GetPages() (pc PageContent, err error) {
 	d.Lock()
 	defer d.Unlock()
-	widgets, err := d.dbManager.GetAll(10,0)
+	widgets, err := d.dbManager.GetAll(10, 0)
 	pc = PageContent{
 		Widgets: widgets,
 	}

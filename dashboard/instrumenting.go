@@ -1,8 +1,9 @@
 package dashboard
 
 import (
-	gometrics "github.com/rcrowley/go-metrics"
 	"time"
+
+	gometrics "github.com/rcrowley/go-metrics"
 )
 
 type instrumentingMiddleware struct {
@@ -43,7 +44,6 @@ func (mw instrumentingMiddleware) Register(widget Widget) (pr RegisterResponse, 
 	pr, err = mw.next.Register(widget)
 	return
 }
-
 
 func (mw instrumentingMiddleware) Init() (errs []error, ok bool) {
 	defer func(begin time.Time) {

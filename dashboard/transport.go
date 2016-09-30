@@ -2,12 +2,13 @@ package dashboard
 
 import (
 	"encoding/json"
+	"net/http"
+
 	kitlog "github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
-	"net/http"
 )
 
 func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger) http.Handler {
