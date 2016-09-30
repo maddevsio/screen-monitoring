@@ -1,7 +1,6 @@
 package dashboard
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,7 +17,7 @@ func TestDbManager(t *testing.T) {
 		t.Fatal("Migrations Up: ", errors)
 	}
 	t.Run("Successfully insert widget info", func(t *testing.T) {
-		var widget = &Widget{Url: "http://example.com", ID: "test_widget_1", Height: 350, Width: 400}
+		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
 		count, err := dbManager.InsertWidget(widget)
 		if err != nil {
 			t.Fatal("ERROR:", err)
@@ -26,8 +25,8 @@ func TestDbManager(t *testing.T) {
 		assert.Equal(t, int64(1), count)
 	})
 	t.Run("Fail to insert widget with same name", func(t *testing.T) {
-		var widget = &Widget{Url: "http://example.com", ID: "test_widget_1", Height: 350, Width: 400}
-		var widget2 = &Widget{Url: "http://some.site.com", ID: "test_widget_1", Height: 450, Width: 350}
+		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
+		var widget2 = &Widget{Url: "http://some.site.com", Id: "test_widget_1", Height: 450, Width: 350}
 		dbManager.InsertWidget(widget)
 		count, err := dbManager.InsertWidget(widget2)
 		assert.NotNil(t, err)
@@ -35,16 +34,16 @@ func TestDbManager(t *testing.T) {
 		assert.Equal(t, int64(0), count)
 	})
 	t.Run("Should update didget data if widget exists", func(t *testing.T) {
-		var widget = &Widget{Url: "http://example.com", ID: "test_widget_1", Height: 350, Width: 400}
-		var widget2 = &Widget{Url: "http://some.site.com", ID: "test_widget_1", Height: 450, Width: 310}
+		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
+		var widget2 = &Widget{Url: "http://some.site.com", Id: "test_widget_1", Height: 450, Width: 310}
 		dbManager.InsertWidget(widget)
-		count, err := dbManager.InsertOrUpdateWidget(widget2)
+		id, err := dbManager.InsertOrUpdateWidget(widget2)
 		assert.Nil(t, err)
-		assert.Equal(t, int64(1), count)
+		assert.True(t, id > 0)
 	})
 	t.Run("Should return all widgets", func(t *testing.T) {
-		var widget = &Widget{Url: "http://example.com", ID: "test_widget_1", Height: 350, Width: 400}
-		var widget2 = &Widget{Url: "http://some.site.com", ID: "test_widget_2", Height: 450, Width: 310}
+		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
+		var widget2 = &Widget{Url: "http://some.site.com", Id: "test_widget_2", Height: 450, Width: 310}
 		var expected = []*Widget{widget, widget2}
 		dbManager.InsertWidget(widget)
 		dbManager.InsertWidget(widget2)
@@ -53,14 +52,14 @@ func TestDbManager(t *testing.T) {
 		assert.InEpsilonSlice(t, expected, actual, float64(0))
 	})
 	t.Run("Should return valid count rows per page", func(t *testing.T) {
-		var widget1 = &Widget{Url: "http://example.com", ID: "l_test_widget_1", Height: 350, Width: 400}
-		var widget2 = &Widget{Url: "http://some.site1.com", ID: "j_test_widget_2", Height: 450, Width: 310}
-		var widget3 = &Widget{Url: "http://some.site2.com", ID: "a_test_widget_3", Height: 450, Width: 310}
-		var widget4 = &Widget{Url: "http://some.site3.com", ID: "s_test_widget_4", Height: 450, Width: 310}
-		var widget5 = &Widget{Url: "http://some.site4.com", ID: "f_test_widget_5", Height: 450, Width: 310}
-		var widget6 = &Widget{Url: "http://some.site5.com", ID: "e_test_widget_6", Height: 450, Width: 310}
-		var widget7 = &Widget{Url: "http://some.site6.com", ID: "b_test_widget_7", Height: 450, Width: 310}
-		var widget8 = &Widget{Url: "http://some.site7.com", ID: "c_test_widget_8", Height: 450, Width: 310}
+		var widget1 = &Widget{Url: "http://example.com", Id: "l_test_widget_1", Height: 350, Width: 400}
+		var widget2 = &Widget{Url: "http://some.site1.com", Id: "j_test_widget_2", Height: 450, Width: 310}
+		var widget3 = &Widget{Url: "http://some.site2.com", Id: "a_test_widget_3", Height: 450, Width: 310}
+		var widget4 = &Widget{Url: "http://some.site3.com", Id: "s_test_widget_4", Height: 450, Width: 310}
+		var widget5 = &Widget{Url: "http://some.site4.com", Id: "f_test_widget_5", Height: 450, Width: 310}
+		var widget6 = &Widget{Url: "http://some.site5.com", Id: "e_test_widget_6", Height: 450, Width: 310}
+		var widget7 = &Widget{Url: "http://some.site6.com", Id: "b_test_widget_7", Height: 450, Width: 310}
+		var widget8 = &Widget{Url: "http://some.site7.com", Id: "c_test_widget_8", Height: 450, Width: 310}
 		var all = []*Widget{widget1, widget2, widget3, widget4, widget5, widget6, widget7, widget8}
 		var expected = []*Widget{widget1, widget2, widget3, widget4}
 		for _, widget := range all {
@@ -97,11 +96,27 @@ func TestDbManager(t *testing.T) {
 	t.Run("Should update page by id", func(t *testing.T) {
 		var page = &Page{Title: "Page 2", Visible: true}
 		id, err := dbManager.InsertPage(page)
-		fmt.Println("ROW ID: ", id, err)
 		page.Id = id
 		page.Visible = false
 		page.Title = "Page title changed"
 		count, err := dbManager.UpdatePage(page)
+		assert.Nil(t, err)
+		assert.Equal(t, int64(1), count)
+	})
+
+	t.Run("Should create widget for page", func(t *testing.T) {
+		var page = &Page{Title: "Page 3", Visible: true}
+		var widget = &Widget{Url: "http://example1.com", Id: "widget_page_3", Height: 450, Width: 300}
+		pid, err := dbManager.InsertPage(page)
+		if err != nil {
+			t.Fatal("Error creating page: ", err)
+		}
+		_, err = dbManager.InsertWidget(widget)
+		if err != nil {
+			t.Fatal("Error creating widget: ", err)
+		}
+
+		count, err := dbManager.InsertWidgetToPage(pid, widget.Id)
 		assert.Nil(t, err)
 		assert.Equal(t, int64(1), count)
 	})

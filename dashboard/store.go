@@ -41,7 +41,7 @@ func (w *WidgetStore) Save(bucket string, widget *Widget) error {
 			if err != nil {
 				return err
 			}
-			return b.Put([]byte(widget.ID), jsonBytes)
+			return b.Put([]byte(widget.Id), jsonBytes)
 		})
 	}
 	return errors.New("Database not initialized!")

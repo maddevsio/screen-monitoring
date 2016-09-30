@@ -10,6 +10,7 @@ type DatabaseManager interface {
 	GetAll(pageSize, offset int) (result []Widget, err error)
 	InsertWidget(widget *Widget) (int64, error)
 	InsertOrUpdateWidget(widget *Widget) (int64, error)
+	InsertWidgetToPage(pageId int64, widgetId string) (int64, error)
 	InsertPage(page *Page) (int64, error)
 	UpdatePage(page *Page) (int64, error)
 	Close() error
@@ -52,7 +53,7 @@ func (m *DbManager) InsertWidget(widget *Widget) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	res, err := db.Exec(insertQuery, widget.ID, widget.Url, widget.Width, widget.Height)
+	res, err := db.Exec(insertQuery, widget.Id, widget.Url, widget.Width, widget.Height)
 	if err != nil {
 		return 0, err
 	}
@@ -69,12 +70,12 @@ func (m *DbManager) InsertOrUpdateWidget(widget *Widget) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	res, err := db.Exec(insertOrReplace, widget.ID, widget.Url, widget.Width, widget.Height)
+	res, err := db.Exec(insertOrReplace, widget.Id, widget.Url, widget.Width, widget.Height)
 	if err != nil {
 		return 0, err
 	}
 
-	return res.RowsAffected()
+	return res.LastInsertId()
 }
 
 func (m *DbManager) GetAll(pageSize, offset int) (result []Widget, err error) {
@@ -123,6 +124,22 @@ func (m *DbManager) UpdatePage(page *Page) (int64, error) {
 		return 0, err
 	}
 	res, err := db.Exec(insertOrReplace, page.Title, page.Visible, page.Id)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
+func (m *DbManager) InsertWidgetToPage(pageId int64, widgetId string) (int64, error) {
+	insertOrReplace := `
+		INSERT INTO page_widgets (id_widget,id_page)
+		VALUES (?,?);
+	`
+	db, err := m.Db()
+	if err != nil {
+		return 0, err
+	}
+	res, err := db.Exec(insertOrReplace, widgetId, pageId)
 	if err != nil {
 		return 0, err
 	}

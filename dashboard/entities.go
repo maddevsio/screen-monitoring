@@ -17,7 +17,7 @@ func (w *Page) ToJson() ([]byte, error) {
 }
 
 type Widget struct {
-	ID      string `json:"id"`
+	Id      string `json:"id"`
 	Width   int    `json:"width"`
 	Height  int    `json:"height"`
 	Content string `json:"content"`
