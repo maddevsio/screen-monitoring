@@ -12,7 +12,7 @@ func TestLogin(t *testing.T) {
 	)
 
 	svc := ahrefsService{}
-	result := svc.SignIn(email, password)
+	result := svc.GetMetricsData(email, password)
 
 	if result != nil {
 		t.Errorf("Expected to be true. Got %s", result)
