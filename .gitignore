@@ -76,3 +76,4 @@ screen-monitoring
 /screen-monitoring.iml
 
 dashboard/*.db
+*.db
