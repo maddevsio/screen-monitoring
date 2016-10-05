@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"github.com/kardianos/osext"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/maddevsio/screen-monitoring/agents/ahrefs_native/service"
@@ -13,6 +12,8 @@ import (
 	"net/http"
 	"os"
 	"text/template"
+	"fmt"
+	"github.com/kardianos/osext"
 )
 
 type Settings struct {
@@ -113,29 +114,21 @@ func main() {
 	if err != nil {
 		log.Println("error: ", err)
 	}
-	log.Printf("%+v", metrics_data)
 	metrics_data.CurrentRanges = metrics_data.CurrentRanges[:len(metrics_data.CurrentRanges)-1]
 	metrics_data.MovementRanges = append(metrics_data.MovementRanges[:0], metrics_data.MovementRanges[0+1:]...)
-	log.Printf("%+v", metrics_data)
-	t := template.New("Metrics Data")
 	folderPath, err := osext.ExecutableFolder()
-	t, err = t.Parse("<table><tr><th>Organic keywords</th><th>Tracked keywords</th></tr>" +
-		"<tr><td><b>All</b>: {{.All.Formated}} {{.All.Delta}}</td><td rowspan=2 colspan=2 style='text-align:center;'><span>{{.Keywords_tracked}} &uarr;{{.MovementTotal.Up}} &darr;{{.MovementTotal.Down}}</span></td></tr>" +
-		"<tr><td><b>Us</b>: {{.Us.Formated}} {{.Us.Delta}}</td><td></td></tr>" +
-		"<tr><td><b>Uk</b>: {{.Uk.Formated}} {{.Uk.Delta}}</td><td rowspan=4>" +
-		"<ul style='list-style-type: none; display: inline-block; margin: 0; padding: 0 10px 0 0;'><li># 1-3</li><li># 4-10</li><li># 11-20</li><li># 21-50</li></ul>" +
-		"<ul style='list-style-type: none; display: inline-block; margin: 0; padding: 0 10px 0 0;'>{{range .CurrentRanges}}<li>{{.}}</li>{{end}}</ul>" +
-		"<ul style='list-style-type: none; display: inline-block; margin: 0; padding: 0; text-align=right;'>{{range .MovementRanges}}<li>{{.}}</li>{{end}}</ul>" +
-		"</td></tr>" +
-		"<tr><td><b>Au</b>: {{.Au.Formated}} {{.Au.Delta}}</td></tr>" +
-		"<tr><td><b>Ca</b>: {{.Ca.Formated}} {{.Ca.Delta}}</td></tr>" +
-		"<tr><td><b>Us</b>: {{.Us.Formated}} {{.Us.Delta}}</td></tr></table>")
-	if err != nil {
-		log.Println(err)
-	}
+	t := template.Must(template.New("template.html").ParseFiles("template.html"))
 	f, err := os.Create(folderPath + "/index.html")
-	t.Execute(f, metrics_data)
-	f.Close()
+	f, err = os.OpenFile("index.html", os.O_RDWR, 0777)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	err = t.Execute(f, metrics_data)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	AgentRegistration(*dashboardURL, *ahrefsProject, "test")
 	e := echo.New()
