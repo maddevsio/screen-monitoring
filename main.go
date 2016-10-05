@@ -21,8 +21,8 @@ func main() {
 	requestLatency := gometrics.NewHistogram(gometrics.NewUniformSample(100))
 	countResult := gometrics.NewHistogram(gometrics.NewUniformSample(100))
 
-	dashboardDbManager := dashboard.NewDbManager("screen_monitoring")
-	dashboardMigrator := dashboard.NewMigrator("screen_monitoring", "./dashboard/migrations")
+	dashboardDbManager := dashboard.NewDbManager("screen_monitoring.db")
+	dashboardMigrator := dashboard.NewMigrator("screen_monitoring.db", "./dashboard/migrations")
 
 	var svc dashboard.DashboardService
 	svc = dashboard.NewDashboardService(dashboardMigrator, dashboardDbManager)

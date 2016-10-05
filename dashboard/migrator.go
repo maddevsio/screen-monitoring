@@ -19,12 +19,12 @@ type DbMigration struct {
 
 func (dbm *DbMigration) Up() ([]error, bool) {
 	dbConnString := fmt.Sprintf("sqlite3://%s", dbm.dbname)
-	return migrate.UpSync(dbConnString, "./migrations")
+	return migrate.UpSync(dbConnString, dbm.migratePath)
 }
 
 func (dbm *DbMigration) Down() ([]error, bool) {
 	dbConnString := fmt.Sprintf("sqlite3://%s", dbm.dbname)
-	return migrate.DownSync(dbConnString, "./migrations")
+	return migrate.DownSync(dbConnString, dbm.migratePath)
 }
 
 func NewMigrator(dbname, migratePath string) Migrator {

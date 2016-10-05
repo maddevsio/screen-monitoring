@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -27,11 +28,11 @@ func NewDashboardService(migrator Migrator, dbManager DatabaseManager) Dashboard
 	}
 }
 
-func (d dashboardService) Init() ([]error, bool) {
+func (d *dashboardService) Init() ([]error, bool) {
 	return d.migrator.Up()
 }
 
-func (d dashboardService) GetPages() (pc PageContent, err error) {
+func (d *dashboardService) GetPages() (pc PageContent, err error) {
 	d.Lock()
 	defer d.Unlock()
 	widgets, err := d.dbManager.GetAll(10, 0)
@@ -44,11 +45,15 @@ func (d dashboardService) GetPages() (pc PageContent, err error) {
 func (d *dashboardService) Register(widget Widget) (pr RegisterResponse, err error) {
 	d.Lock()
 	defer d.Unlock()
-	_, err = d.dbManager.InsertOrUpdateWidget(&widget)
+	id, err := d.dbManager.InsertOrUpdateWidget(&widget)
+
+	fmt.Println("ID: ", id)
+
 	if err != nil {
-		pr = RegisterResponse{Success: true}
+		pr = RegisterResponse{Success: false}
 		return
 	}
-	pr = RegisterResponse{Success: false}
+
+	pr = RegisterResponse{Success: true}
 	return
 }

@@ -12,7 +12,7 @@ func makePagesEndpoint(svc DashboardService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		v, err := svc.GetPages()
 		if err != nil {
-			return nil, nil
+			return []Widget{}, nil
 		}
 		return v, nil
 	}
