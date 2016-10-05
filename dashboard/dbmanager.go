@@ -79,6 +79,7 @@ func (m *DbManager) InsertOrUpdateWidget(widget *Widget) (int64, error) {
 }
 
 func (m *DbManager) GetAll(pageSize, offset int) (result []Widget, err error) {
+	result = []Widget{}
 	selectAllWithPaging := `
 		SELECT * FROM widgets LIMIT ?,?;
 	`
@@ -86,14 +87,17 @@ func (m *DbManager) GetAll(pageSize, offset int) (result []Widget, err error) {
 	if err != nil {
 		return
 	}
-	rows, err := db.Query(selectAllWithPaging, pageSize, offset)
+	rows, err := db.Query(selectAllWithPaging, offset, pageSize)
 	if err != nil {
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var row Widget
-		rows.Scan(&row)
+		err = rows.Scan(&row.Id, &row.Width, &row.Height, &row.Url, &row.Content)
+		if err != nil {
+			return
+		}
 		result = append(result, row)
 	}
 	return
