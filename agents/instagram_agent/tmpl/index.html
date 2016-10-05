@@ -5,10 +5,42 @@
 </head>
 <body>
   <div class="widget" width="300" height="300">
-      <p>Instagram:  Name</p>
-      <p>Followers: 0</p>
-      <p>Follows: 0</p>
-      <p>Publications: 0</p>
+      <p class="username">Instagram: Unknown</p>
+      <p class="followers">Followers: 0</p>
+      <p class="following">Following: 0</p>
+      <p class="posts">Posts: 0</p>
+      <p class="date">Date: </p>
   </div>
+  <script>
+    function getData() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://localhost:8090/counters', true);
+      xhr.timeout = 200;
+
+      xhr.onload = function() {
+        var jsonResponse = JSON.parse(this.responseText);
+        username = jsonResponse.username;
+        followers = jsonResponse.followed_by;
+        following = jsonResponse.follows;
+        posts = jsonResponse.media;
+        created = jsonResponse.created;
+
+        document.querySelector(".username").innerHTML = "Username: " + username;
+        document.querySelector(".followers").innerHTML = "Followers: " + followers;
+        document.querySelector(".following").innerHTML = "Following: " + following;
+        document.querySelector(".posts").innerHTML = "Posts: " + posts;
+        document.querySelector(".date").innerHTML = "Date: " + created;
+      }
+      xhr.onerror = function() {
+        console.log('Error ' + this.status);
+      }
+      xhr.ontimeout = function() {
+        console.log("timeout");
+      };
+      xhr.send(null);
+    }
+
+    setInterval(getData, 5000);
+    </script>
 </body>
 </html>
