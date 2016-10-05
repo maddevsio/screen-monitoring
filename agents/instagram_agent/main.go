@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -58,7 +57,7 @@ func main() {
 		AccessToken: accessToken,
 	}
 
-	ticker := time.NewTicker(time.Second * 5)
+	ticker := time.NewTicker(time.Minute * 2)
 	go func() {
 		for _ = range ticker.C {
 			if ok, err := api.VerifyCredentials(); !ok {
@@ -82,17 +81,21 @@ func main() {
 
 	e := echo.New()
 	e.File("/", "tmpl/index.html")
-	e.GET("counters", env.countersLast)
+	e.GET("/counters", env.countersLast)
 	e.Run(standard.New(*httpAddr))
 }
 
 func (env *Env) countersLast(c echo.Context) error {
 	counters, err := env.db.LastCounters()
 	if err != nil {
+		// TODO: handle this
 		log.Fatal(err)
+		return err
 	}
-	s := fmt.Sprintf("%s, %d \n", counters.Created, counters.FollowedBy)
-	return c.String(http.StatusOK, s)
+	if err := c.Bind(counters); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, counters)
 }
 
 func envString(env, fallback string) string {
