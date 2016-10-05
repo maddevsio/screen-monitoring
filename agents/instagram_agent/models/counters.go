@@ -6,11 +6,11 @@ import (
 )
 
 type Counter struct {
-	Created    time.Time `db:"created"`
-	Username   string    `db:"username"`
-	Media      int64     `db:"media"`
-	Follows    int64     `db:"follows"`
-	FollowedBy int64     `db:"followed_by"`
+	Created    time.Time `db:"created" json:"created"`
+	Username   string    `db:"username" json:"username"`
+	Media      int64     `db:"media" json:"media"`
+	Follows    int64     `db:"follows" json:"follows"`
+	FollowedBy int64     `db:"followed_by" json:"followed_by"`
 }
 
 func (db *DB) CountersCreate(c *Counter) error {
