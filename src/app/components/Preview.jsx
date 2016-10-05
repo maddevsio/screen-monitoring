@@ -21,7 +21,7 @@ class Preview extends React.Component {
       this.refreshIframe();
   }
   refreshIframe() {
-    this.refs.iframe.src = this.state.url;
+    this._frame.src = this.state.url;
   }
   render() {
     return (
@@ -30,8 +30,9 @@ class Preview extends React.Component {
                 width={this.state.width}
                 height={this.state.height}
                 frameBorder="0"
+                src={this.state.url}
                 style={{float: 'left'}}
-                ref="iframe"/>
+                ref={(c) => this._frame = c}/>
       </div>
     );
   }
