@@ -81,6 +81,7 @@ func main() {
 
 	e := echo.New()
 	e.File("/", "tmpl/index.html")
+	e.Static("/static", "assets")
 	e.GET("/counters", env.countersLast)
 	e.Run(standard.New(*httpAddr))
 }
