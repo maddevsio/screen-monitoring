@@ -11,7 +11,7 @@ function getData() {
     posts = jsonResponse.media;
     created = jsonResponse.created;
 
-    document.querySelector(".username").innerHTML = "Username: " + username;
+    document.querySelector(".username").innerHTML = "Instagram: " + username;
     document.querySelector(".followers").innerHTML = "Followers: " + followers;
     document.querySelector(".following").innerHTML = "Following: " + following;
     document.querySelector(".posts").innerHTML = "Posts: " + posts;
