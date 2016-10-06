@@ -49,7 +49,7 @@ func TestDbManager(t *testing.T) {
 		assert.Equal(t, int64(0), count)
 		teardown(t)
 	})
-	t.Run("Should update didget data if widget exists", func(t *testing.T) {
+	t.Run("Should update widget data if widget exists", func(t *testing.T) {
 		up(t)
 		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
 		var widget2 = &Widget{Url: "http://some.site.com", Id: "test_widget_1", Height: 450, Width: 310}
@@ -94,7 +94,7 @@ func TestDbManager(t *testing.T) {
 		teardown(t)
 	})
 
-	t.Run("Should return empty array if now wigets in db", func(t *testing.T) {
+	t.Run("Should return empty array if no wigets in db", func(t *testing.T) {
 		up(t)
 		actual, err := dbManager.GetAll(4, 0)
 		assert.Nil(t, err)
@@ -136,7 +136,7 @@ func TestDbManager(t *testing.T) {
 		teardown(t)
 	})
 
-	t.Run("Should create widget for page", func(t *testing.T) {
+	t.Run("Should link widget to page", func(t *testing.T) {
 		up(t)
 		var page = &Page{Title: "Page 3", Visible: true}
 		var widget = &Widget{Url: "http://example1.com", Id: "widget_page_3", Height: 450, Width: 300}
@@ -152,6 +152,38 @@ func TestDbManager(t *testing.T) {
 		count, err := dbManager.InsertWidgetToPage(pid, widget.Id)
 		assert.Nil(t, err)
 		assert.Equal(t, int64(1), count)
+		teardown(t)
+	})
+
+	t.Run("Get widgets by page Id", func(t *testing.T) {
+		up(t)
+		var page = &Page{Title: "Page 1", Visible: true}
+		var page2 = &Page{Title: "Page 2", Visible: true}
+		var widget = Widget{Url: "http://example1.com", Id: "widget_page_1", Height: 450, Width: 300}
+		var widget2 = Widget{Url: "http://example2.com", Id: "widget_page_2", Height: 420, Width: 200}
+		var widget3 = Widget{Url: "http://example3.com", Id: "widget_page_3", Height: 320, Width: 210}
+		pid, err := dbManager.InsertPage(page)
+		pid2, err := dbManager.InsertPage(page2)
+		dbManager.InsertWidget(&widget)
+		dbManager.InsertWidget(&widget2)
+		dbManager.InsertWidget(&widget3)
+
+		_, err = dbManager.InsertWidgetToPage(pid, widget.Id)
+		t.Log(err)
+		_, err = dbManager.InsertWidgetToPage(pid, widget2.Id)
+		t.Log(err)
+		_, err = dbManager.InsertWidgetToPage(pid2, widget3.Id)
+		t.Log(err)
+
+		expected := []Widget{widget, widget2}
+		expected2 := []Widget{widget3}
+
+		actual, err := dbManager.GetPageWidgets(pid)
+		actual2, err := dbManager.GetPageWidgets(pid2)
+
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+		assert.Equal(t, expected2, actual2)
 		teardown(t)
 	})
 

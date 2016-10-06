@@ -13,6 +13,7 @@ type DatabaseManager interface {
 	InsertWidgetToPage(pageId int64, widgetId string) (int64, error)
 	InsertPage(page *Page) (int64, error)
 	UpdatePage(page *Page) (int64, error)
+	GetPageWidgets(pageId int64) (result []Widget, err error)
 	Close() error
 }
 
@@ -148,4 +149,29 @@ func (m *DbManager) InsertWidgetToPage(pageId int64, widgetId string) (int64, er
 		return 0, err
 	}
 	return res.RowsAffected()
+}
+
+func (m *DbManager) GetPageWidgets(pageId int64) (result []Widget, err error) {
+	result = []Widget{}
+	selectAllPageWidgets := `
+		SELECT * FROM widgets WHERE id in (SELECT id_widget FROM page_widgets WHERE id_page=?);
+	`
+	db, err := m.Db()
+	if err != nil {
+		return
+	}
+	rows, err := db.Query(selectAllPageWidgets, pageId)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var row Widget
+		err = rows.Scan(&row.Id, &row.Width, &row.Height, &row.Url, &row.Content)
+		if err != nil {
+			return
+		}
+		result = append(result, row)
+	}
+	return
 }
