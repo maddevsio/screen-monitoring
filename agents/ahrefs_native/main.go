@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"github.com/kardianos/osext"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/maddevsio/screen-monitoring/agents/ahrefs_native/service"
@@ -12,8 +13,6 @@ import (
 	"net/http"
 	"os"
 	"text/template"
-	"fmt"
-	"github.com/kardianos/osext"
 )
 
 type Settings struct {
@@ -21,12 +20,11 @@ type Settings struct {
 	Width   int    `json:"width"`
 	Height  int    `json:"height"`
 	Content string `json:"content"`
+	Url     string `json:"url"`
 }
 
-func AgentRegistration(url, project_name, data_metrics string) {
-	s := Settings{ID: "native_ahrefs_agent", Width: 200, Height: 200}
-	s.Content = "<div><p>Native Ahrefs data mertrics of " + project_name + "</p><h1>" + data_metrics + "</h1></div>"
-	log.Printf("Register to: %s", url)
+func AgentRegistration(url, agent_url string) {
+	s := Settings{ID: "native_ahrefs_agent", Width: 300, Height: 180, Content: "", Url: agent_url}
 	jsonStr, _ := json.Marshal(s)
 	req, req_err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	if req_err != nil {
@@ -41,7 +39,6 @@ func AgentRegistration(url, project_name, data_metrics string) {
 	defer client_resp.Body.Close()
 
 	log.Println("response Status:", client_resp.Status)
-	log.Println("response data_metrics:", data_metrics)
 	body, _ := ioutil.ReadAll(client_resp.Body)
 	log.Println("response Body:", string(body))
 }
@@ -121,16 +118,15 @@ func main() {
 	f, err := os.Create(folderPath + "/index.html")
 	f, err = os.OpenFile("index.html", os.O_RDWR, 0777)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
 	defer f.Close()
 	err = t.Execute(f, metrics_data)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
-	AgentRegistration(*dashboardURL, *ahrefsProject, "test")
+	AgentRegistration(*dashboardURL, "http://localhost:8090/")
 	e := echo.New()
 	e.File("/", "index.html")
 	e.Run(standard.New(*httpAddr))
