@@ -1,0 +1,19 @@
+body {
+    background-color: #fff;
+    color: #000;
+    font-family: 'Open Sans', sans-serif, Arial;
+}
+
+html {
+    font-size: 16px;
+}
+
+.legend {
+    font-size: 0.9rem;
+    padding-top: 15px;
+    padding-left: 30px;
+}
+
+svg {
+    margin-top: 20px;
+}
