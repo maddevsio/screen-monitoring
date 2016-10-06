@@ -1,6 +1,6 @@
 function getData() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'http://localhost:8090/counters', true);
+  xhr.open('GET', '/counters', true);
   xhr.timeout = 200;
 
   xhr.onload = function() {
