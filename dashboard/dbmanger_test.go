@@ -212,6 +212,22 @@ func TestDbManager(t *testing.T) {
 		teardown(t)
 	})
 
+	t.Run("Should return unlinked widgets to pages", func(t *testing.T) {
+		up(t)
+		var page = Page{Title: "Page 1", Visible: true}
+		var widget = Widget{Url: "http://example1.com", Id: "widget_page_1", Height: 450, Width: 300}
+		var widget2 = Widget{Url: "http://example2.com", Id: "widget_page_2", Height: 420, Width: 200}
+		pid, err := dbManager.InsertPage(&page)
+		dbManager.InsertWidget(&widget)
+		dbManager.InsertWidget(&widget2)
+		expected := []Widget{widget2}
+		_, err = dbManager.InsertWidgetToPage(pid, widget.Id)
+		actual, err := dbManager.GetUnlinkedWidgets()
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+		teardown(t)
+	})
+
 	err := dbManager.Close()
 	if err != nil {
 		t.Fatal("DB MANAGER: ", err)
