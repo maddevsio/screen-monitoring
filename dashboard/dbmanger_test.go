@@ -11,6 +11,10 @@ var (
 	dbManager  = NewDbManager("test.db")
 )
 
+const (
+	PAGE_WIDGET_UNIQUE_ERROR = "UNIQUE constraint failed: page_widgets.id_widget, page_widgets.id_page"
+)
+
 func teardown(t *testing.T) {
 	errors, ok := dbMigrator.Down()
 	t.Log("Down migrations")
@@ -152,6 +156,27 @@ func TestDbManager(t *testing.T) {
 		count, err := dbManager.InsertWidgetToPage(pid, widget.Id)
 		assert.Nil(t, err)
 		assert.Equal(t, int64(1), count)
+		teardown(t)
+	})
+
+	t.Run("Should link widget to page twice with same widget id", func(t *testing.T) {
+		up(t)
+		var page = &Page{Title: "Page 3", Visible: true}
+		var widget = &Widget{Url: "http://example1.com", Id: "widget_page_3", Height: 450, Width: 300}
+		pid, err := dbManager.InsertPage(page)
+		if err != nil {
+			t.Fatal("Error creating page: ", err)
+		}
+		_, err = dbManager.InsertWidget(widget)
+		if err != nil {
+			t.Fatal("Error creating widget: ", err)
+		}
+
+		_, err = dbManager.InsertWidgetToPage(pid, widget.Id)
+		count, err := dbManager.InsertWidgetToPage(pid, widget.Id)
+		assert.NotNil(t, err)
+		assert.Equal(t, PAGE_WIDGET_UNIQUE_ERROR, err.Error())
+		assert.Equal(t, int64(0), count)
 		teardown(t)
 	})
 
