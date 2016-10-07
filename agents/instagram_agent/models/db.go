@@ -7,8 +7,8 @@ import (
 
 type Datastore interface {
 	CountersCreate(*Counter) error
-	LastCounters() (*Counter, error)
-	CountersForLastMonth() ([]*Counter, error)
+	CountersFindLast() (*Counter, error)
+	CountersLastMonth() ([]*AverageCounter, error)
 }
 
 type DB struct {

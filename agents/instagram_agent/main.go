@@ -83,20 +83,52 @@ func main() {
 	e.File("/", "tmpl/index.html")
 	e.Static("/static", "assets")
 	e.GET("/counters", env.countersLast)
+	e.GET("/counters-last-month", env.countersLastMonth)
 	e.Run(standard.New(*httpAddr))
 }
 
 func (env *Env) countersLast(c echo.Context) error {
-	counters, err := env.db.LastCounters()
+	counters, err := env.db.CountersFindLast()
 	if err != nil {
 		// TODO: handle this
 		log.Fatal(err)
 		return err
 	}
-	if err := c.Bind(counters); err != nil {
+	return c.JSON(http.StatusOK, counters)
+}
+
+func (env *Env) countersLastMonth(c echo.Context) error {
+	avgCounters, err := env.db.CountersLastMonth()
+	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, counters)
+
+	var media []models.CounterObject
+	var follows []models.CounterObject
+	var followed_by []models.CounterObject
+
+	for _, avgCounter := range avgCounters {
+		media = append(media, models.CounterObject{
+			Date:     avgCounter.Date,
+			Counters: avgCounter.Media,
+		})
+		follows = append(follows, models.CounterObject{
+			Date:     avgCounter.Date,
+			Counters: avgCounter.Follows,
+		})
+		followed_by = append(followed_by, models.CounterObject{
+			Date:     avgCounter.Date,
+			Counters: avgCounter.FollowedBy,
+		})
+	}
+
+	response := models.CountersLastMonthResponse{
+		Media:      media,
+		Follows:    follows,
+		FollowedBy: followed_by,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func envString(env, fallback string) string {
