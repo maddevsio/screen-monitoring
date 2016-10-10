@@ -23,8 +23,8 @@ type AverageCounter struct {
 }
 
 type CounterObject struct {
-	Date     string  `json:"date"`
-	Counters float64 `json:"counters"`
+	Date  string  `json:"date"`
+	Value float64 `json:"value"`
 }
 
 type CountersLastMonthResponse struct {

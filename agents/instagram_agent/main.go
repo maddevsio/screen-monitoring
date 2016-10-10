@@ -109,16 +109,16 @@ func (env *Env) countersLastMonth(c echo.Context) error {
 
 	for _, avgCounter := range avgCounters {
 		media = append(media, models.CounterObject{
-			Date:     avgCounter.Date,
-			Counters: avgCounter.Media,
+			Date:  avgCounter.Date,
+			Value: avgCounter.Media,
 		})
 		follows = append(follows, models.CounterObject{
-			Date:     avgCounter.Date,
-			Counters: avgCounter.Follows,
+			Date:  avgCounter.Date,
+			Value: avgCounter.Follows,
 		})
 		followed_by = append(followed_by, models.CounterObject{
-			Date:     avgCounter.Date,
-			Counters: avgCounter.FollowedBy,
+			Date:  avgCounter.Date,
+			Value: avgCounter.FollowedBy,
 		})
 	}
 
