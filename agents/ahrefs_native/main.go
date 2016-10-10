@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"github.com/kardianos/osext"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/maddevsio/screen-monitoring/agents/ahrefs_native/service"
@@ -12,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"text/template"
 )
 
 type Settings struct {
@@ -97,51 +95,32 @@ func main() {
 	)
 
 	flag.Parse()
-	organic_keywords, tracked_keywords, err := svc.GetMetricsData(*ahrefsEmail, *ahrefsPassword, *ahrefsProject)
-	if err != nil {
-		log.Println(err)
-	}
-	metrics_data := MetricsData{}
-	err = json.Unmarshal(organic_keywords, &metrics_data)
-	if err != nil {
-		log.Println("error: ", err)
-	}
-
-	err = json.Unmarshal(tracked_keywords, &metrics_data)
-	if err != nil {
-		log.Println("error: ", err)
-	}
-	metrics_data.CurrentRanges = metrics_data.CurrentRanges[:len(metrics_data.CurrentRanges)-1]
-	metrics_data.MovementRanges = append(metrics_data.MovementRanges[:0], metrics_data.MovementRanges[0+1:]...)
-	folderPath, err := osext.ExecutableFolder()
-	t := template.Must(template.New("template.html").ParseFiles("template.html"))
-	f, err := os.Create(folderPath + "/index.html")
-	f, err = os.OpenFile("index.html", os.O_RDWR, 0777)
-	if err != nil {
-		log.Println(err)
-	}
-	defer f.Close()
-	err = t.Execute(f, metrics_data)
-	if err != nil {
-		log.Println(err)
-	}
 
 	AgentRegistration(*dashboardURL, "http://localhost:8090/")
 	e := echo.New()
 	e.File("/", "index.html")
+	e.GET("/data", func(c echo.Context) error {
+
+		organic_keywords, tracked_keywords, err := svc.GetMetricsData(*ahrefsEmail, *ahrefsPassword, *ahrefsProject)
+		if err != nil {
+			log.Println(err)
+		}
+		metrics_data := MetricsData{}
+		err = json.Unmarshal(organic_keywords, &metrics_data)
+		if err != nil {
+			log.Println("error: ", err)
+		}
+
+		err = json.Unmarshal(tracked_keywords, &metrics_data)
+		if err != nil {
+			log.Println("error: ", err)
+		}
+		metrics_data.CurrentRanges = metrics_data.CurrentRanges[:len(metrics_data.CurrentRanges)-1]
+		metrics_data.MovementRanges = append(metrics_data.MovementRanges[:0], metrics_data.MovementRanges[0+1:]...)
+
+		return c.JSON(http.StatusOK, metrics_data)
+	})
 	e.Run(standard.New(*httpAddr))
-}
-
-type GetMetricsDataRequest struct {
-	EMAIL    string `json:"ahrefsEmail"`
-	PASSWORD string `json:"ahrefsPassword"`
-	PROJECT  string `json:"ahrefsProject"`
-}
-
-type GetMetricsDataResponse struct {
-	OrganicKeywords []byte `json:"organic_keywords"`
-	TrackedKeywords []byte `json:"tracked_keywords"`
-	Error           error  `json:"error"`
 }
 
 func envString(env, fallback string) string {
