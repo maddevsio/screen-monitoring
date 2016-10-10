@@ -14,6 +14,7 @@ type DatabaseManager interface {
 	InsertPage(page *Page) (int64, error)
 	UpdatePage(page *Page) (int64, error)
 	GetPageWidgets(pageId int64) (result []Widget, err error)
+	GetUnlinkedWidgets() (result []Widget, err error)
 	Close() error
 }
 
@@ -161,6 +162,31 @@ func (m *DbManager) GetPageWidgets(pageId int64) (result []Widget, err error) {
 		return
 	}
 	rows, err := db.Query(selectAllPageWidgets, pageId)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var row Widget
+		err = rows.Scan(&row.Id, &row.Width, &row.Height, &row.Url, &row.Content)
+		if err != nil {
+			return
+		}
+		result = append(result, row)
+	}
+	return
+}
+
+func (m *DbManager) GetUnlinkedWidgets() (result []Widget, err error) {
+	result = []Widget{}
+	selectQuery := `
+		SELECT * FROM widgets WHERE id not in (SELECT DISTINCT id_widget FROM page_widgets);
+	`
+	db, err := m.Db()
+	if err != nil {
+		return
+	}
+	rows, err := db.Query(selectQuery)
 	if err != nil {
 		return
 	}
