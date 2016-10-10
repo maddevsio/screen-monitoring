@@ -16,8 +16,8 @@ type Settings struct {
 func Register(dashboardURL string, indexURL string) error {
 	s := Settings{
 		ID:     "instagram_agent",
-		Width:  300,
-		Height: 300,
+		Width:  600,
+		Height: 900,
 		URL:    indexURL,
 	}
 
