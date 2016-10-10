@@ -24,20 +24,23 @@ function getData() {
     console.log("timeout");
   };
   xhr.send(null);
-}
+};
 
 setInterval(getData, 5000);
 
-d3.json('static/fake_users.json', function(data) {
-    //  data = MG.convert.date(data, 'year');
-    for (var i = 0; i < data.length; i++) {
-        data[i] = MG.convert.date(data[i], 'date');
+d3.json('counters-last-month', function(data) {
+    var data_set = [
+      data.media,
+      data.follows,
+      data.followed_by
+    ]
+    for (var i = 0; i < data_set.length; i++) {
+        data_set[i] = MG.convert.date(data_set[i], 'date');
     }
-
     MG.data_graphic({
         title: "Instagram chart",
         description: "Instagram user activity for last month.",
-        data: data,
+        data: data_set,
         width: 600,
         height: 200,
         right: 40,
