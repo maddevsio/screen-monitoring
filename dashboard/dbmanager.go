@@ -8,6 +8,7 @@ import (
 
 type DatabaseManager interface {
 	GetAll(pageSize, offset int) (result []Widget, err error)
+	GetPages() (result []Page, err error)
 	InsertWidget(widget *Widget) (int64, error)
 	InsertOrUpdateWidget(widget *Widget) (int64, error)
 	InsertWidgetToPage(pageId int64, widgetId string) (int64, error)
@@ -198,6 +199,50 @@ func (m *DbManager) GetUnlinkedWidgets() (result []Widget, err error) {
 			return
 		}
 		result = append(result, row)
+	}
+	return
+}
+
+func (m *DbManager) GetPages() (result []Page, err error) {
+	result = []Page{}
+	selectQuery := `
+		SELECT p.*, w.* FROM pages as p
+		INNER JOIN page_widgets as pw ON p.id = pw.id_page
+		INNER JOIN widgets as w ON w.id = pw.id_widget
+		ORDER BY p.id;
+	`
+	db, err := m.Db()
+	if err != nil {
+		return
+	}
+	rows, err := db.Query(selectQuery)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	var page *Page
+	var currentPageId int64
+	for rows.Next() {
+		var rowWidget Widget
+		var rowPage Page
+		err = rows.Scan(&rowPage.Id, &rowPage.Title, &rowPage.Visible,
+			&rowWidget.Id, &rowWidget.Width, &rowWidget.Height,
+			&rowWidget.Url, &rowWidget.Content)
+		if err != nil {
+			return
+		}
+
+		if currentPageId != rowPage.Id {
+			if page != nil {
+				result = append(result, *page)
+			}
+			page = &Page{}
+			page.Id = rowPage.Id
+			page.Title = rowPage.Title
+			page.Visible = rowPage.Visible
+		}
+
+		page.Widgets = append(page.Widgets, rowWidget)
 	}
 	return
 }

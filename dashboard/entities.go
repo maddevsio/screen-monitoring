@@ -7,9 +7,10 @@ type PageContent struct {
 }
 
 type Page struct {
-	Id      int64  `json:"id"`
-	Title   string `json:"title"`
-	Visible bool   `json:"visible"`
+	Id      int64    `json:"id"`
+	Title   string   `json:"title"`
+	Visible bool     `json:"visible"`
+	Widgets []Widget `json:"content"`
 }
 
 func (w *Page) ToJson() ([]byte, error) {
