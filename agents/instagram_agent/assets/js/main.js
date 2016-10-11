@@ -31,8 +31,8 @@ setInterval(getData, 5000);
 d3.json('counters-last-month', function(data) {
     var data_set = [
       data.media,
+      data.followed_by,
       data.follows,
-      data.followed_by
     ]
     for (var i = 0; i < data_set.length; i++) {
         data_set[i] = MG.convert.date(data_set[i], 'date');
@@ -45,7 +45,7 @@ d3.json('counters-last-month', function(data) {
         height: 200,
         right: 40,
         target: '#instagram-metrics',
-        legend: ['Followers','Following','Posts'],
+        legend: ['Posts', 'Followers','Following'],
         legend_target: '.legend'
     });
 });
