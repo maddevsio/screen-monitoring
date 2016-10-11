@@ -4,7 +4,7 @@
 
 2. Install database
     ```
-    cat db.sql | sqlite3 instagram.db
+    cat migrations/db.sql | sqlite3 instagram.db
     ```
 2. Run the server
     ```
@@ -22,11 +22,9 @@ export API_KEY="{GOOGLE PAGE SPEED APIKEY}"
 
 ## Flag usage
 ```
-Usage of ./pagespeed_agent:
+Usage of ./instagram_agent:
   -dashboardURL string
        	Dashboard service URL (default "http://localhost:8080/dashboard/v1/register")
   -httpAddr string
        	HTTP listen address (default ":8090")
-  -targetURL string
-       	Target URL (default "https://google.com")
 ```

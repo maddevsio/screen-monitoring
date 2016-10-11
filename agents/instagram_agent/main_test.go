@@ -26,7 +26,7 @@ func (mdb *mockDB) CountersFindLast() (*models.Counter, error) {
 func (mdb *mockDB) CountersLastMonth() ([]*models.AverageCounter, error) {
 	avgCounters := make([]*models.AverageCounter, 0)
 	avgCounters = append(avgCounters, &models.AverageCounter{"2016-10-04", 10, 15, 20})
-	avgCounters = append(avgCounters, &models.AverageCounter{"2016-10-05", 12, 15, 20})
+	avgCounters = append(avgCounters, &models.AverageCounter{"2016-10-05", 12, 16, 22})
 	return avgCounters, nil
 }
 
@@ -43,5 +43,20 @@ func TestCountersLast(t *testing.T) {
 	if assert.NoError(t, env.countersLast(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, countersJSON, rec.Body.String())
+	}
+}
+
+func TestCountersLastMonth(t *testing.T) {
+	e := echo.New()
+	rec := httptest.NewRecorder()
+	req := new(http.Request)
+	c := e.NewContext(standard.NewRequest(req, e.Logger()), standard.NewResponse(rec, e.Logger()))
+	c.SetPath("/counters-last-month")
+	env := Env{db: &mockDB{}}
+	expectedJSON := `{"media":[{"date":"2016-10-04","value":10},{"date":"2016-10-05","value":12}],"follows":[{"date":"2016-10-04","value":15},{"date":"2016-10-05","value":16}],"followed_by":[{"date":"2016-10-04","value":20},{"date":"2016-10-05","value":22}]}`
+
+	if assert.NoError(t, env.countersLastMonth(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedJSON, rec.Body.String())
 	}
 }
