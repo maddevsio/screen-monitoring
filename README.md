@@ -65,6 +65,10 @@ curl -H "Content-Type: application/json" -X POST -d '{"id": "github_http_agent2"
       ```
       go get -u github.com/mattes/migrate
       ```
+    * Create db:
+      ```
+      touch screen_monitoring.db
+      ```
     * For migrations run command:
       ```
       migrate -url sqlite3://screen_monitoring.db -path ./dashboard/migrations up
