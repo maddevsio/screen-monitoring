@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
-	"github.com/maddevsio/screen-monitoring/agents/ahrefs_native/service"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/maddevsio/screen-monitoring/agents/ahrefs_native/service"
 )
 
 type Settings struct {

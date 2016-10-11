@@ -19,8 +19,8 @@
         <td>
             <b>All</b>: <span id="all_formated"></span> <span id="all_delta"></span>
         </td>
-        <td rowspan=2 colspan=2 style='text-align:center;'>
-            <span id="keywords_tracked"></span> &uarr;<span id="movement_total_up"></span> &darr;<span id="movement_total_down"></span>
+        <td rowspan=2 colspan=2 style='text-align:left;'>
+            <span id="keywords_tracked" style="color:#00479e; font-size:27px; font-weight:500;"></span> <span style="color:green;">&uarr;</span><span id="movement_total_up" style="color: green;"></span> <span style="color:red;">&darr;</span><span id="movement_total_down" style="color: red;"></span>
         </td>
     </tr>
     <tr>
@@ -40,9 +40,9 @@
                 <li># 11-20</li>
                 <li># 21-50</li>
             </ul>
-            <ul id="current_ranges">
+            <ul style="text-align:right;" id="current_ranges">
             </ul>
-            <ul style='text-align=right;' id="movement_ranges">
+            <ul style="text-align:right;" id="movement_ranges">
             </ul>
         </td>
     </tr>
@@ -68,7 +68,6 @@
           alert( xhr.status + ': ' + xhr.statusText );
         } else {
           resp = JSON.parse(xhr.responseText);
-          console.log(resp);
           document.getElementById("all_formated").textContent = resp.organic_keywords.all.formated;
           document.getElementById("all_delta").textContent = resp.organic_keywords.all.delta;
           document.getElementById("keywords_tracked").textContent = resp.keywords_tracked;
