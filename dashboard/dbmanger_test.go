@@ -254,6 +254,29 @@ func TestDbManager(t *testing.T) {
 		teardown(t)
 	})
 
+	t.Run("Should return pages with widgets", func(t *testing.T) {
+		up(t)
+		var page = Page{Title: "Page 1", Visible: true}
+		var widget = Widget{Url: "http://example3.com", Id: "widget_page_3", Height: 450, Width: 300}
+		var widget2 = Widget{Url: "http://example4.com", Id: "widget_page_4", Height: 420, Width: 200}
+		pid, err := dbManager.InsertPage(&page)
+		dbManager.InsertWidget(&widget)
+		dbManager.InsertWidget(&widget2)
+		expected := []Page{Page{
+			Id:      pid,
+			Title:   page.Title,
+			Visible: page.Visible,
+			Widgets: []Widget{widget, widget2},
+		}}
+		_, err = dbManager.InsertWidgetToPage(pid, widget.Id)
+		_, err = dbManager.InsertWidgetToPage(pid, widget2.Id)
+
+		actual, err := dbManager.GetPages()
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+		teardown(t)
+	})
+
 	err := dbManager.Close()
 	if err != nil {
 		t.Fatal("DB MANAGER: ", err)

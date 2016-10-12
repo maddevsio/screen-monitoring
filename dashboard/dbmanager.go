@@ -222,12 +222,14 @@ func (m *DbManager) GetPages() (result []Page, err error) {
 	defer rows.Close()
 	var page *Page
 	var currentPageId int64
+
 	for rows.Next() {
 		var rowWidget Widget
 		var rowPage Page
 		err = rows.Scan(&rowPage.Id, &rowPage.Title, &rowPage.Visible,
 			&rowWidget.Id, &rowWidget.Width, &rowWidget.Height,
 			&rowWidget.Url, &rowWidget.Content)
+
 		if err != nil {
 			return
 		}
@@ -235,14 +237,20 @@ func (m *DbManager) GetPages() (result []Page, err error) {
 		if currentPageId != rowPage.Id {
 			if page != nil {
 				result = append(result, *page)
+				page = nil
 			}
 			page = &Page{}
 			page.Id = rowPage.Id
 			page.Title = rowPage.Title
 			page.Visible = rowPage.Visible
 		}
-
 		page.Widgets = append(page.Widgets, rowWidget)
+		currentPageId = rowPage.Id
 	}
+
+	if page != nil {
+		result = append(result, *page)
+	}
+
 	return
 }
