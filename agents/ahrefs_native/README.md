@@ -10,7 +10,7 @@
     ```
 
 ## Env usage
-``` 
+```
 export PORT=8090
 export DASHBOARD_URL="http://localhost:8080/dashboard/v1/register"
 export AHREFS_EMAIL = "email@mail.com"
@@ -30,6 +30,6 @@ Usage of ./ping_agent:
   -ahrefsPassword string
        	Password. (default "password")
   -ahrefsProject string
-       	Name of the project which data metrics you want to get. Be sure to use the exact name which is shown at ahrefs dahsboard. (default "myproject.com")
+       	Link to the project which data metrics you want to get. Be sure to use the exact url which is shown at ahrefs dahsboard. (default "http://myproject.com")
 
 ```
