@@ -10,38 +10,39 @@ class App extends React.Component {
         this.state = {
             pages: props.pages || []
         };
-        this.receiveResponse = (data) => {
-            this.setState({
-                pages: data.widgets
-            });
-        };
+    }
 
-        this._renderPages = () => {
-            if(this.state.pages.length > 0) {
-                return <Pages pages={this.state.pages}/>
-            }else {
-                return (
-                    <strong>No widgets</strong>
-                )
-            }
-        }
+    _grabInfo = () => {
+         var self = this;
+         fetch('/dashboard/v1/pages')
+                     .then((response) => response.json())
+                     .then(self._receiveResponse)
+                     /*
+                     .then(function (){
+                        setTimeout(self._grabInfo, INTERVAL);
+                     })
+                     */
+                     .catch((ex) => {
+                         console.error(ex);
+                         setTimeout(self._grabInfo, INTERVAL);
+                     });
+    }
 
-        this._grabInfo = () => {
-             var self = this;
-             fetch('/dashboard/v1/pages')
-                         .then((response) => response.json())
-                         .then(self.receiveResponse)
-                         /*
-                         .then(function (){
-                            setTimeout(self._grabInfo, INTERVAL);
-                         })
-                         */
-                         .catch((ex) => {
-                             console.error(ex);
-                             setTimeout(self._grabInfo, INTERVAL);
-                         });
+    _renderPages = () => {
+        if(this.state.pages.length > 0) {
+            return <Pages pages={this.state.pages}/>
+        }else {
+            return (
+                <strong>No widgets</strong>
+            )
         }
     }
+
+    _receiveResponse = (data) => {
+        this.setState({
+            pages: data
+        });
+    };
 
     componentDidMount(){
         this._grabInfo();

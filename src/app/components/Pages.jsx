@@ -2,29 +2,37 @@ import React from 'react';
 import Preview from './Preview.jsx';
 
 class Pages extends React.Component {
+    static defaultProps = {
+        pages: [],
+        pageIndex: 0
+    }
+
     constructor(props) {
         super(props);
         this.state = {
-            pages: props.pages || []
+            pages: props.pages || [],
+            pageIndex: props.pageIndex
         };
+    }
 
-        this.renderPages = () => {
-               return this.state.pages.map((page, index) => {
-                   return <Preview {...page} key={index} />
-               })
-        }
+    renderPage = () => {
+        var page = this.state.pages[this.state.pageIndex];
+        return page.content.map((w, idx) => {
+            return <Preview {...w} key={w.id} />
+        });
     }
 
     componentWillReceiveProps(nextProps) {
       this.setState({
-        pages: nextProps.pages || []
+        pages: nextProps.pages || [],
+        pageIndex: nextProps.pageIndex
       });
     }
 
     render() {
         return (
             <div>
-                {this.renderPages()}
+                {this.renderPage()}
             </div>
         );
     }

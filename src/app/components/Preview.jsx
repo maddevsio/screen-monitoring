@@ -20,7 +20,7 @@ class Preview extends React.Component {
   componentDidMount() {
       this.refreshIframe();
   }
-  refreshIframe() {
+  refreshIframe = () => {
     this._frame.src = this.state.url;
   }
   render() {
