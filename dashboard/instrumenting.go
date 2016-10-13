@@ -25,13 +25,13 @@ func NewInstrumentingMiddleware(requestCount gometrics.Counter,
 	}
 }
 
-func (mw instrumentingMiddleware) GetPages() (pc PageContent, err error) {
+func (mw instrumentingMiddleware) GetPages() (pages []Page, err error) {
 	defer func(begin time.Time) {
 		mw.requestCount.Inc(1)
 		mw.requestLatency.Update(time.Since(begin).Nanoseconds())
 	}(time.Now())
 
-	pc, err = mw.next.GetPages()
+	pages, err = mw.next.GetPages()
 	return
 }
 

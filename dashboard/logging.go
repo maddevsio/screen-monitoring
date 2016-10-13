@@ -16,13 +16,13 @@ func NewLoggerService(logger log.Logger, next DashboardService) DashboardService
 	return loggingMiddleware{logger: logger, next: next}
 }
 
-func (mw loggingMiddleware) GetPages() (pc PageContent, err error) {
-	pc, err = mw.next.GetPages()
+func (mw loggingMiddleware) GetPages() (pages []Page, err error) {
+	pages, err = mw.next.GetPages()
 	defer func(begin time.Time) {
 		_ = mw.logger.Log(
 			"method", "Pages",
 			"input", "[No parametgers]",
-			"output", fmt.Sprintf("%+v", pc),
+			"output", fmt.Sprintf("%+v", pages),
 			"err", err,
 			"took", time.Since(begin),
 		)

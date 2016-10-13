@@ -1,16 +1,13 @@
 package dashboard
 
-import (
-	"fmt"
-	"sync"
-)
+import "sync"
 
 type RegisterResponse struct {
 	Success bool
 }
 
 type DashboardService interface {
-	GetPages() (pc PageContent, err error)
+	GetPages() (pc []Page, err error)
 	Register(widget Widget) (pr RegisterResponse, err error)
 	Init() ([]error, bool)
 }
@@ -32,23 +29,17 @@ func (d *dashboardService) Init() ([]error, bool) {
 	return d.migrator.Up()
 }
 
-func (d *dashboardService) GetPages() (pc PageContent, err error) {
+func (d *dashboardService) GetPages() (pages []Page, err error) {
 	d.Lock()
 	defer d.Unlock()
-	widgets, err := d.dbManager.GetAll(10, 0)
-	pc = PageContent{
-		Widgets: widgets,
-	}
+	pages, err = d.dbManager.GetPages()
 	return
 }
 
 func (d *dashboardService) Register(widget Widget) (pr RegisterResponse, err error) {
 	d.Lock()
 	defer d.Unlock()
-	id, err := d.dbManager.InsertOrUpdateWidget(&widget)
-
-	fmt.Println("ID: ", id)
-
+	_, err = d.dbManager.InsertOrUpdateWidget(&widget)
 	if err != nil {
 		pr = RegisterResponse{Success: false}
 		return
