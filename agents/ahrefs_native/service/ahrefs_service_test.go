@@ -1,21 +1,26 @@
 package service
 
 import (
+	"fmt"
 	"os"
+	"reflect"
 	"testing"
 )
 
-func TestLogin(t *testing.T) {
+func TestGetMetricsData(t *testing.T) {
 	var (
 		email    = envString("AHREFS_EMAIL", "test@mail.com")
 		password = envString("AHREFS_PASSWORD", "password")
+		project  = envString("AHREFS_PROJECT", "http://projectname.com")
 	)
 
 	svc := ahrefsService{}
-	result := svc.GetMetricsData(email, password)
+	organic_keywords, _, err := svc.GetMetricsData(email, password, project)
+	fmt.Println("hello")
 
-	if result != nil {
-		t.Errorf("Expected to be true. Got %s", result)
+	fmt.Println(reflect.TypeOf(organic_keywords))
+	if reflect.TypeOf(organic_keywords) != nil {
+		t.Errorf("Error, expected byte arrays. Got %s", err)
 	}
 }
 

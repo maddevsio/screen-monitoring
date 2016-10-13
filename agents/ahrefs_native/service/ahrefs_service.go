@@ -13,10 +13,11 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html"
 	"log"
 	"net/http/httputil"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 type AhrefsService interface {
@@ -147,7 +148,7 @@ func (ahrefsService) GetMetricsData(email, password, project string) (organic_ke
 	if err != nil {
 		return organic_keywords, nil, err
 	}
-
+	log.Println(string(organic_keywords))
 	return organic_keywords, tracked_keywords, nil
 }
 
