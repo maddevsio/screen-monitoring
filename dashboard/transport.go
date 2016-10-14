@@ -32,10 +32,22 @@ func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger
 		options...,
 	)
 
+	widgetRegisterToPageHandler := kithttp.NewServer(
+		ctx,
+		makeRegisterWidgetToPageEndpoint(svc),
+		decodeRegisterWidgetToPageRequest,
+		encodeResponse,
+		options...,
+	)
+
 	r := mux.NewRouter()
 
-	r.Handle("/dashboard/v1/pages", renderDashboardHandler).Methods("GET")
-	r.Handle("/dashboard/v1/register", widgetRegisterHandler).Methods("POST")
+	r.Handle("/dashboard/v1/pages",
+		renderDashboardHandler).Methods("GET")
+	r.Handle("/dashboard/v1/register",
+		widgetRegisterHandler).Methods("POST")
+	r.Handle(`/dashboard/v1/register/{widgetId:\w+}/page/{pageId:\d+}`,
+		widgetRegisterToPageHandler).Methods("GET")
 	return r
 }
 

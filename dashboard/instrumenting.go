@@ -45,6 +45,16 @@ func (mw instrumentingMiddleware) Register(widget Widget) (pr RegisterResponse, 
 	return
 }
 
+func (mw instrumentingMiddleware) RegisterToPage(pageId int64, widgetId string) (pr RegisterResponse, err error) {
+	defer func(begin time.Time) {
+		mw.requestCount.Inc(1)
+		mw.requestLatency.Update(time.Since(begin).Nanoseconds())
+	}(time.Now())
+
+	pr, err = mw.next.RegisterToPage(pageId, widgetId)
+	return
+}
+
 func (mw instrumentingMiddleware) Init() (errs []error, ok bool) {
 	defer func(begin time.Time) {
 		mw.requestCount.Inc(1)
