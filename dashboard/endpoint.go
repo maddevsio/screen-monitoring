@@ -31,6 +31,17 @@ func makeRegisterWidgetEndpoint(svc DashboardService) endpoint.Endpoint {
 	}
 }
 
+func makeInsertPageEndpoint(svc DashboardService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(Page)
+		v, err := svc.InsertPage(req)
+		if err != nil {
+			return v, err
+		}
+		return v, nil
+	}
+}
+
 func makeRegisterWidgetToPageEndpoint(svc DashboardService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(struct {
@@ -63,6 +74,14 @@ func decodeRegisterWidgetToPageRequest(_ context.Context, r *http.Request) (inte
 		widgetId string
 	}{pageId: pageId, widgetId: widgetId}
 
+	return request, nil
+}
+
+func decodeInsertPageRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request Page
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
 	return request, nil
 }
 

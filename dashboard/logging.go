@@ -57,6 +57,20 @@ func (mw loggingMiddleware) RegisterToPage(pageId int64, widgetId string) (pr Re
 	return
 }
 
+func (mw loggingMiddleware) InsertPage(page Page) (response InsertPageResponse, err error) {
+	response, err = mw.next.InsertPage(page)
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"method", "InsertPage",
+			"input", fmt.Sprintf("%+v", page),
+			"output", fmt.Sprintf("%+v", response),
+			"err", err,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return
+}
+
 func (mw loggingMiddleware) Init() (initErrors []error, ok bool) {
 	initErrors, ok = mw.next.Init()
 	defer func(begin time.Time) {

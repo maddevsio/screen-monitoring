@@ -40,6 +40,14 @@ func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger
 		options...,
 	)
 
+	pageInsertHandler := kithttp.NewServer(
+		ctx,
+		makeInsertPageEndpoint(svc),
+		decodeInsertPageRequest,
+		encodeResponse,
+		options...,
+	)
+
 	r := mux.NewRouter()
 
 	r.Handle("/dashboard/v1/pages",
@@ -48,6 +56,8 @@ func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger
 		widgetRegisterHandler).Methods("POST")
 	r.Handle(`/dashboard/v1/register/{widgetId:\w+}/page/{pageId:\d+}`,
 		widgetRegisterToPageHandler).Methods("GET")
+	r.Handle("/dashboard/v1/page/new",
+		pageInsertHandler).Methods("POST")
 	return r
 }
 

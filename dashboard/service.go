@@ -6,10 +6,16 @@ type RegisterResponse struct {
 	Success bool
 }
 
+type InsertPageResponse struct {
+	Id      int64
+	Success bool
+}
+
 type DashboardService interface {
 	GetPages() (pc []Page, err error)
 	Register(widget Widget) (pr RegisterResponse, err error)
 	RegisterToPage(pageId int64, widgetId string) (pr RegisterResponse, err error)
+	InsertPage(page Page) (response InsertPageResponse, err error)
 	Init() ([]error, bool)
 }
 
@@ -61,5 +67,18 @@ func (d *dashboardService) Register(widget Widget) (pr RegisterResponse, err err
 	}
 
 	pr = RegisterResponse{Success: true}
+	return
+}
+
+func (d *dashboardService) InsertPage(page Page) (response InsertPageResponse, err error) {
+	d.Lock()
+	defer d.Unlock()
+	id, err := d.dbManager.InsertPage(&page)
+	if err != nil {
+		response = InsertPageResponse{Success: false}
+		return
+	}
+
+	response = InsertPageResponse{Id: id, Success: true}
 	return
 }
