@@ -18,10 +18,64 @@ docker build -t screen-monitoring .
 docker run -p 8888:8080 -it --rm --name my_screen_monitoring screen-monitoring
 ```
 
-###Example Dashboard API registration
+###Example Dashboard API
+
+#### Step 1 (Create page for widgets)
+
+Request:
+
+```
+curl -H "Content-Type: application/json" -X POST -d '{"title":"First page","visible":true}' http://localhost:8080/dashboard/v1/page/new
+```
+
+Response (success):
+```
+{"Id":1,"Success":true}
+```
+
+Response (fail):
+```
+{"error":"Do: UNIQUE constraint failed: pages.title"}
+```
+
+#### Step 2 (Register widget)
+
 ```
 curl -H "Content-Type: application/json" -X POST -d '{"id": "github_http_agent2", "width": 200, "height": 122, "content": "", "url":"http://www.w3schools.com/html/default.asp"}' http://localhost:8080/dashboard/v1/register
 ```
+
+Response (success):
+
+```
+{"Success":true}
+```
+
+Response (fail) (only for invalid data inside JSON):
+
+```
+{"error":"Decode: invalid character 's' looking for beginning of value"}
+```
+
+#### Step 3 (Register widget on page)
+
+```
+curl -X GET http://localhost:8080/dashboard/v1/register/github_http_agent2/page/1
+
+```
+
+Note:
+
+```
+http://localhost:8080/dashboard/v1/register/{widgetId}/page/{pageId}
+```
+
+Response (success): `{"Success":true}`
+
+Response (fail):
+```
+{"error":"Do: UNIQUE constraint failed: page_widgets.id_widget, page_widgets.id_page"}
+```
+
 
 ###React sources:
   * Install node.js version ```>= 5.8```
