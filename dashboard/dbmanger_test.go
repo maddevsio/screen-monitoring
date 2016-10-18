@@ -115,6 +115,15 @@ func TestDbManager(t *testing.T) {
 		teardown(t)
 	})
 
+	t.Run("Should not create page with empty title", func(t *testing.T) {
+		up(t)
+		var page = &Page{Title: "", Visible: true}
+		count, err := dbManager.InsertPage(page)
+		assert.Equal(t, int64(0), count)
+		assert.NotNil(t, err)
+		teardown(t)
+	})
+
 	t.Run("Should not insert page with same title", func(t *testing.T) {
 		up(t)
 		var page = &Page{Title: "Page 1", Visible: true}
