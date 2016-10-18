@@ -53,6 +53,24 @@ func TestDbManager(t *testing.T) {
 		assert.Equal(t, int64(0), count)
 		teardown(t)
 	})
+	t.Run("Fail to insert widget with negative coordinates", func(t *testing.T) {
+		up(t)
+		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: -400}
+		count, err := dbManager.InsertWidget(widget)
+		assert.NotNil(t, err)
+		assert.Equal(t, "CHECK constraint failed: widgets", err.Error())
+		assert.Equal(t, int64(0), count)
+		teardown(t)
+	})
+	t.Run("Fail to insert widget with empty url", func(t *testing.T) {
+		up(t)
+		var widget = &Widget{Url: "", Id: "test_widget_1", Height: 350, Width: -400}
+		count, err := dbManager.InsertWidget(widget)
+		assert.NotNil(t, err)
+		assert.Equal(t, "CHECK constraint failed: widgets", err.Error())
+		assert.Equal(t, int64(0), count)
+		teardown(t)
+	})
 	t.Run("Should update widget data if widget exists", func(t *testing.T) {
 		up(t)
 		var widget = &Widget{Url: "http://example.com", Id: "test_widget_1", Height: 350, Width: 400}
