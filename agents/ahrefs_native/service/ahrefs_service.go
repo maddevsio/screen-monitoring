@@ -132,6 +132,7 @@ func (ahrefsService) GetMetricsData(email, password, project string) (organic_ke
 	if err != nil {
 		return nil, nil, err
 	}
+	log.Println(string(dashboard_page))
 	project_hash, _ := getHash(dashboard_page, project)
 	organic_keywords_form := url.Values{}
 	organic_keywords_form.Add("urls_hashes", project_hash)
@@ -148,7 +149,6 @@ func (ahrefsService) GetMetricsData(email, password, project string) (organic_ke
 	if err != nil {
 		return organic_keywords, nil, err
 	}
-	log.Println(string(organic_keywords))
 	return organic_keywords, tracked_keywords, nil
 }
 
@@ -172,9 +172,10 @@ func getElementByName(name string, n *html.Node) (element *html.Node, ok bool) {
 
 func getHash(body []byte, project_name string) (string, bool) {
 	project_hash := ""
+	status := false
 	rootNode, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
-		return "Parse errror", false
+		return project_hash, status
 	}
 	doc := goquery.NewDocumentFromNode(rootNode)
 	match_string := ""
@@ -194,6 +195,7 @@ func getHash(body []byte, project_name string) (string, bool) {
 	match_result := re.FindStringSubmatch(match_string)
 	if match_result != nil {
 		project_hash = match_result[1]
+		status = true
 	}
-	return project_hash, true
+	return project_hash, status
 }

@@ -2,32 +2,21 @@ package service
 
 import (
 	"fmt"
-	"os"
-	"reflect"
+	"io/ioutil"
 	"testing"
 )
 
-func TestGetMetricsData(t *testing.T) {
-	var (
-		email    = envString("AHREFS_EMAIL", "test@mail.com")
-		password = envString("AHREFS_PASSWORD", "password")
-		project  = envString("AHREFS_PROJECT", "http://projectname.com")
-	)
+var (
+	project = "http://myproject.com"
+)
 
-	svc := ahrefsService{}
-	organic_keywords, _, err := svc.GetMetricsData(email, password, project)
-	fmt.Println("hello")
-
-	fmt.Println(reflect.TypeOf(organic_keywords))
-	if reflect.TypeOf(organic_keywords) != nil {
-		t.Errorf("Error, expected byte arrays. Got %s", err)
+func TestGetHash(t *testing.T) {
+	body, err := ioutil.ReadFile("mocked_dashboard_response.html")
+	if err != nil {
+		fmt.Println(err)
 	}
-}
-
-func envString(env, fallback string) string {
-	e := os.Getenv(env)
-	if e == "" {
-		return fallback
+	_, status := getHash(body, project)
+	if status == false {
+		t.Errorf("Error, hash not found!")
 	}
-	return e
 }
