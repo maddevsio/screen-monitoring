@@ -132,7 +132,6 @@ func (ahrefsService) GetMetricsData(email, password, project string) (organic_ke
 	if err != nil {
 		return nil, nil, err
 	}
-	log.Println(string(dashboard_page))
 	project_hash, _ := getHash(dashboard_page, project)
 	organic_keywords_form := url.Values{}
 	organic_keywords_form.Add("urls_hashes", project_hash)
@@ -154,20 +153,6 @@ func (ahrefsService) GetMetricsData(email, password, project string) (organic_ke
 
 func NewService() ahrefsService {
 	return ahrefsService{}
-}
-
-func getElementByName(name string, n *html.Node) (element *html.Node, ok bool) {
-	for _, a := range n.Attr {
-		if a.Key == "name" && a.Val == name {
-			return n, true
-		}
-	}
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if element, ok = getElementByName(name, c); ok {
-			return
-		}
-	}
-	return
 }
 
 func getHash(body []byte, project_name string) (string, bool) {
