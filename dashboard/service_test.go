@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,6 +54,45 @@ func (s *DashboardServiceTestSuite) TestGetPagesReturnPagesArray() {
 	s.DbManagerInstance.AssertNumberOfCalls(s.T(), "GetPages", 1)
 	assert.NotNil(s.T(), pages)
 	assert.Nil(s.T(), err)
+}
+
+func (s *DashboardServiceTestSuite) TestRegisterWidgetSuccess() {
+	var expectedResponse = RegisterResponse{Success: true}
+	var widget = Widget{
+		Id:     "widget_1",
+		Url:    "http://example.com:8081/",
+		Width:  250,
+		Height: 150,
+	}
+
+	s.DbManagerInstance.On("InsertOrUpdateWidget", &widget).Return(int64(1), nil)
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+
+	actualResponse, err := service.Register(widget)
+
+	s.DbManagerInstance.AssertNumberOfCalls(s.T(), "InsertOrUpdateWidget", 1)
+	assert.Equal(s.T(), expectedResponse, actualResponse)
+	assert.Nil(s.T(), err)
+}
+
+func (s *DashboardServiceTestSuite) TestRegisterWidgetFail() {
+	var expectedResponse = RegisterResponse{Success: false}
+	var expectedError = errors.New("Some error")
+	var widget = Widget{
+		Id:     "widget_2",
+		Url:    "http://example.com:8000/",
+		Width:  250,
+		Height: 150,
+	}
+
+	s.DbManagerInstance.On("InsertOrUpdateWidget", &widget).Return(int64(0), expectedError)
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+
+	actualResponse, actualError := service.Register(widget)
+
+	s.DbManagerInstance.AssertNumberOfCalls(s.T(), "InsertOrUpdateWidget", 1)
+	assert.Equal(s.T(), expectedResponse, actualResponse)
+	assert.Equal(s.T(), expectedError, actualError)
 }
 
 func (s *DashboardServiceTestSuite) TearDownTest() {
