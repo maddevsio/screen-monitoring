@@ -128,6 +128,36 @@ func (s *DashboardServiceTestSuite) TestInsertPageFail() {
 	assert.Equal(s.T(), expectedError, err)
 }
 
+func (s *DashboardServiceTestSuite) TestRegisterWidgetToPageSuccess() {
+	expectedResponse := RegisterResponse{Success: true}
+	pageId := int64(1)
+	widgetName := "widget_1"
+
+	s.DbManagerInstance.On("InsertWidgetToPage", pageId, widgetName).Return(int64(1), nil)
+
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+	actualResponse, err := service.RegisterToPage(pageId, widgetName)
+
+	assert.Equal(s.T(), expectedResponse, actualResponse)
+	assert.Nil(s.T(), err)
+}
+
+func (s *DashboardServiceTestSuite) TestRegisterWidgetToPageFail() {
+	expectedResponse := RegisterResponse{Success: false}
+	expectedError := errors.New("Some error")
+
+	pageId := int64(1)
+	widgetName := "widget_1"
+
+	s.DbManagerInstance.On("InsertWidgetToPage", pageId, widgetName).Return(int64(0), expectedError)
+
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+	actualResponse, actualError := service.RegisterToPage(pageId, widgetName)
+
+	assert.Equal(s.T(), expectedResponse, actualResponse)
+	assert.Equal(s.T(), expectedError, actualError)
+}
+
 func (s *DashboardServiceTestSuite) TearDownTest() {
 	s.MigratorInstance = nil
 	s.DbManagerInstance = nil
