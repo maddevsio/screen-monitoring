@@ -158,6 +158,28 @@ func (s *DashboardServiceTestSuite) TestRegisterWidgetToPageFail() {
 	assert.Equal(s.T(), expectedError, actualError)
 }
 
+func (s *DashboardServiceTestSuite) TestInitUpMigrationsSuccess() {
+	expectedErrors := []error{}
+	expectedStatus := true
+	s.MigratorInstance.On("Up").Return(expectedErrors, expectedStatus)
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+	actualErrors, actualStatus := service.Init()
+	s.MigratorInstance.AssertNumberOfCalls(s.T(), "Up", 1)
+	assert.True(s.T(), actualStatus)
+	assert.Equal(s.T(), expectedErrors, actualErrors)
+}
+
+func (s *DashboardServiceTestSuite) TestInitUpMigrationsFail() {
+	expectedErrors := []error{errors.New("Errors 1"), errors.New("Errors 2")}
+	expectedStatus := false
+	s.MigratorInstance.On("Up").Return(expectedErrors, expectedStatus)
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+	actualErrors, actualStatus := service.Init()
+	s.MigratorInstance.AssertNumberOfCalls(s.T(), "Up", 1)
+	assert.False(s.T(), actualStatus)
+	assert.Equal(s.T(), expectedErrors, actualErrors)
+}
+
 func (s *DashboardServiceTestSuite) TearDownTest() {
 	s.MigratorInstance = nil
 	s.DbManagerInstance = nil
