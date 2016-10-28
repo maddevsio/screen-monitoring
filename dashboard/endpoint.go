@@ -14,6 +14,16 @@ func makePagesEndpoint(svc DashboardService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		v, err := svc.GetPages()
 		if err != nil {
+			return []Page{}, nil
+		}
+		return v, nil
+	}
+}
+
+func makeUnregisteredWidgetsEndpoint(svc DashboardService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		v, err := svc.GetUnregisteredWidgets()
+		if err != nil {
 			return []Widget{}, nil
 		}
 		return v, nil
@@ -85,7 +95,7 @@ func decodeInsertPageRequest(_ context.Context, r *http.Request) (interface{}, e
 	return request, nil
 }
 
-func decodePagesRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeNoParamsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return nil, nil
 }
 

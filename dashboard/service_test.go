@@ -180,6 +180,16 @@ func (s *DashboardServiceTestSuite) TestInitUpMigrationsFail() {
 	assert.Equal(s.T(), expectedErrors, actualErrors)
 }
 
+func (s *DashboardServiceTestSuite) TestGetUnregisteredWidgetsSuccess() {
+	expectedWidgets := []Widget{Widget{Id: "w1", Url: "http://example1.com/", Width: 450, Height: 350}}
+	s.DbManagerInstance.On("GetUnlinkedWidgets").Return(expectedWidgets, nil)
+	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
+	actualWidgets, actualError := service.GetUnregisteredWidgets()
+	s.DbManagerInstance.AssertNumberOfCalls(s.T(), "GetUnlinkedWidgets", 1)
+	assert.Nil(s.T(), actualError)
+	assert.Equal(s.T(), expectedWidgets, actualWidgets)
+}
+
 func (s *DashboardServiceTestSuite) TearDownTest() {
 	s.MigratorInstance = nil
 	s.DbManagerInstance = nil

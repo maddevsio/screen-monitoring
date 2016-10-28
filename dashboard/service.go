@@ -16,6 +16,7 @@ type DashboardService interface {
 	Register(widget Widget) (pr RegisterResponse, err error)
 	RegisterToPage(pageId int64, widgetId string) (pr RegisterResponse, err error)
 	InsertPage(page Page) (response InsertPageResponse, err error)
+	GetUnregisteredWidgets() (widgets []Widget, err error)
 	Init() ([]error, bool)
 }
 
@@ -80,5 +81,12 @@ func (d *dashboardService) InsertPage(page Page) (response InsertPageResponse, e
 	}
 
 	response = InsertPageResponse{Id: id, Success: true}
+	return
+}
+
+func (d *dashboardService) GetUnregisteredWidgets() (widgets []Widget, err error) {
+	d.Lock()
+	defer d.Unlock()
+	widgets, err = d.dbManager.GetUnlinkedWidgets()
 	return
 }

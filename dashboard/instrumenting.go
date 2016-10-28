@@ -35,6 +35,16 @@ func (mw instrumentingMiddleware) GetPages() (pages []Page, err error) {
 	return
 }
 
+func (mw instrumentingMiddleware) GetUnregisteredWidgets() (widgets []Widget, err error) {
+	defer func(begin time.Time) {
+		mw.requestCount.Inc(1)
+		mw.requestLatency.Update(time.Since(begin).Nanoseconds())
+	}(time.Now())
+
+	widgets, err = mw.next.GetUnregisteredWidgets()
+	return
+}
+
 func (mw instrumentingMiddleware) Register(widget Widget) (pr RegisterResponse, err error) {
 	defer func(begin time.Time) {
 		mw.requestCount.Inc(1)

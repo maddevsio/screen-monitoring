@@ -19,7 +19,15 @@ func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger
 	renderDashboardHandler := kithttp.NewServer(
 		ctx,
 		makePagesEndpoint(svc),
-		decodePagesRequest,
+		decodeNoParamsRequest,
+		encodeResponse,
+		options...,
+	)
+
+	unregisteredWidgetsHandler := kithttp.NewServer(
+		ctx,
+		makeUnregisteredWidgetsEndpoint(svc),
+		decodeNoParamsRequest,
 		encodeResponse,
 		options...,
 	)
@@ -56,8 +64,10 @@ func MakeHandler(ctx context.Context, svc DashboardService, logger kitlog.Logger
 		widgetRegisterHandler).Methods("POST")
 	r.Handle(`/dashboard/v1/register/{widgetId:\w+}/page/{pageId:\d+}`,
 		widgetRegisterToPageHandler).Methods("GET")
-	r.Handle("/dashboard/v1/page/new",
+	r.Handle("/dashboard/v1/pages/new",
 		pageInsertHandler).Methods("POST")
+	r.Handle("/dashboard/v1/widgets/unregistered",
+		unregisteredWidgetsHandler).Methods("GET")
 	return r
 }
 

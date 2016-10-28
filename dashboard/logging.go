@@ -30,6 +30,20 @@ func (mw loggingMiddleware) GetPages() (pages []Page, err error) {
 	return
 }
 
+func (mw loggingMiddleware) GetUnregisteredWidgets() (widgets []Widget, err error) {
+	widgets, err = mw.next.GetUnregisteredWidgets()
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"method", "GetUnregisteredWidgets",
+			"input", "[No parametgers]",
+			"output", fmt.Sprintf("%+v", widgets),
+			"err", err,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return
+}
+
 func (mw loggingMiddleware) Register(widget Widget) (pr RegisterResponse, err error) {
 	pr, err = mw.next.Register(widget)
 	defer func(begin time.Time) {
