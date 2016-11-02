@@ -86,9 +86,8 @@ func main() {
 	e.GET("/data", func(c echo.Context) error {
 		metrics_data, err := svc.GetMetricsData()
 		if err != nil {
-			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, err)
 		}
-
 		return c.JSON(http.StatusOK, metrics_data)
 	})
 	e.Run(standard.New(*httpAddr))
