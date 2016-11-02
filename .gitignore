@@ -71,9 +71,11 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-public/
+public/*
+!public/vendor/
 screen-monitoring
 /screen-monitoring.iml
 
 dashboard/*.db
 *.db
+.DS_Store
