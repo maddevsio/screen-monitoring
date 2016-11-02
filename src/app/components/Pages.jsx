@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PropTypes, PureComponent } from 'react';
 import Preview from './Preview.jsx';
 
-class Pages extends React.Component {
+class Pages extends PureComponent {
     static defaultProps = {
         pages: [],
         pageIndex: 0

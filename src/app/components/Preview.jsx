@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes, PureComponent } from 'react';
 
-class Preview extends React.Component {
+class Preview extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

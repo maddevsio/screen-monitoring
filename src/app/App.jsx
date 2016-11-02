@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PropTypes, PureComponent } from 'react';
 import Pages from './components/Pages.jsx'
 
 const INTERVAL = 1000
 
-class App extends React.Component {
+class App extends PureComponent {
 
     constructor(props) {
         super(props);
