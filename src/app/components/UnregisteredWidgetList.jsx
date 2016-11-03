@@ -1,11 +1,16 @@
 import React, {PureComponent} from 'react';
+import WidgetRow from './WidgetRow.jsx';
 
 const WIDGETS_UNREG_URL = '/dashboard/v1/widgets/unregistered';
+const TABLE_VIEW = 0;
+const PAGES_PREVIEW = 1;
 
 class UnregisteredWidgetList extends PureComponent {
 
   static defaultProps = {
-    widgets: []
+    widgets: [],
+    viewState: TABLE_VIEW,
+    selected: null
   }
 
   static propTypes = {
@@ -15,7 +20,9 @@ class UnregisteredWidgetList extends PureComponent {
   constructor(props) {
       super(props);
       this.state = {
-        widgets: props.widgets
+        widgets: props.widgets,
+        viewState: props.viewState,
+        selected: null
       }
   }
 
@@ -36,7 +43,11 @@ class UnregisteredWidgetList extends PureComponent {
        });
   }
 
-  render(){
+  _onRegisterWidget = (w) => {
+
+  }
+
+  _renderTable = () => {
     return (
       <div className="panel panel-default" style={{"marginTop": "15px"}}>
           <div className="panel-heading">
@@ -50,26 +61,34 @@ class UnregisteredWidgetList extends PureComponent {
                   <th>Width</th>
                   <th>Height</th>
                   <th>Url</th>
+                  <th>&nbsp;</th>
                 </tr>
               </thead>
               <tbody>
                   {
                     this.state.widgets.map((w, idx) => {
                       return (
-                        <tr key={idx}>
-                          <th scope="row">{w.id}</th>
-                          <td>{w.width}</td>
-                          <td>{w.height}</td>
-                          <td>{w.url}</td>
-                        </tr>
-                      )
-                    })
+                        <WidgetRow key={idx} widget={w} onClick={this._onRegisterWidget}/>
+                      );
+                    });
                   }
               </tbody>
             </table>
           </div>
       </div>
     )
+  }
+
+  _renderPages = () => {
+
+  }
+
+  render(){
+    if (this.state.viewState == TABLE_VIEW) {
+      return this._renderTable();
+    } else if(this.state.viewState == PAGES_PREVIEW) {
+      return this._renderPages();
+    }
   }
 }
 
