@@ -1,14 +1,30 @@
 import React, {PureComponent} from 'react';
 import WidgetRow from './WidgetRow.jsx';
+import PageButton from './PageButton.jsx';
+import { hashHistory } from 'react-router'
 
 const WIDGETS_UNREG_URL = '/dashboard/v1/widgets/unregistered';
+const GET_PAGES_URL = '/dashboard/v1/pages';
 const TABLE_VIEW = 0;
 const PAGES_PREVIEW = 1;
+
+const css = {
+  page: {
+    "width": "150px",
+    "height": "150px",
+    "float":"left",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "margin": "5px"
+  }
+}
 
 class UnregisteredWidgetList extends PureComponent {
 
   static defaultProps = {
     widgets: [],
+    pages: [],
     viewState: TABLE_VIEW,
     selected: null
   }
@@ -28,13 +44,25 @@ class UnregisteredWidgetList extends PureComponent {
 
   componentDidMount(){
     this._getUnregisteredWidgetsList();
+    this._getPagesList();
+  }
+
+  _getPagesList() {
+    var self = this;
+    fetch(GET_PAGES_URL)
+      .then(r => r.json())
+      .then(function (data){
+         self.setState({pages:data});
+      })
+      .catch((ex) => {
+          console.error(ex);
+      });
   }
 
   _getUnregisteredWidgetsList(){
      var self = this;
      fetch(WIDGETS_UNREG_URL)
-       .then((response) => response.json())
-       .then(self._receiveResponse)
+       .then(r => r.json())
        .then(function (data){
           self.setState({widgets:data});
        })
@@ -43,8 +71,36 @@ class UnregisteredWidgetList extends PureComponent {
        });
   }
 
-  _onRegisterWidget = (w) => {
+  _postRegisterWidgetOnPage(pageId, widgetId){
+    var self = this;
+    const REGISTER_WIDGET_ON_PAGE_URL = `/dashboard/v1/register/${widgetId}/page/${pageId}`;
+    fetch(REGISTER_WIDGET_ON_PAGE_URL)
+      .then(r => r.json())
+      .then(data => {
+         if (data.Success) {
+           hashHistory.push('/');
+         } else {
+           alert(data.error);
+         }
+      })
+      .catch((ex) => {
+          console.error(ex);
+      });
+  }
 
+  _onRegisterWidget = (w) => {
+      this.setState({
+        selected: w,
+        viewState: PAGES_PREVIEW
+      });
+  }
+
+  _choosePage = (p) => {
+    console.log("PAGE: ", p);
+    var selected = this.state.selected;
+    if (selected) {
+      this._postRegisterWidgetOnPage(p.id, selected.id);
+    }
   }
 
   _renderTable = () => {
@@ -76,11 +132,25 @@ class UnregisteredWidgetList extends PureComponent {
             </table>
           </div>
       </div>
-    )
+    );
   }
 
   _renderPages = () => {
-
+    return (
+        <div className="panel panel-default" style={{"marginTop": "15px"}}>
+            <div className="panel-heading">
+              <b>Pages list:</b>
+            </div>
+            <div className="panel-body">
+                <div key={0} className="btn btn-success" style={css.page}>
+                  <div><i className="fa fa-2x fa-plus" aria-hidden="true"></i></div>
+                </div>
+                {
+                   this.state.pages.map(p => (<PageButton onClick={this._choosePage} key={p.id} page={p}/>))
+                }
+            </div>
+        </div>
+    );
   }
 
   render(){

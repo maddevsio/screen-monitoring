@@ -31,7 +31,7 @@ class Preview extends PureComponent {
                 height={this.state.height}
                 frameBorder="0"
                 src={this.state.url}
-                style={{float: 'left'}}
+                style={{float: 'left', margin: "10px"}}
                 ref={(c) => this._frame = c}/>
       </div>
     );
