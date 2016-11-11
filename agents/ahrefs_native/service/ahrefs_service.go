@@ -16,7 +16,6 @@ import (
 	"compress/gzip"
 	"fmt"
 	"log"
-	"net/http/httputil"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
@@ -30,11 +29,7 @@ func debug(data []byte, err error) {
 	}
 }
 
-type AhrefsService interface {
-	GetMetricsData() (organic_keywords []byte, tracked_keywords []byte, err error)
-}
-
-type ahrefsService struct {
+type AhrefsServiceStruct struct {
 	email    string
 	password string
 	project  string
@@ -71,6 +66,10 @@ type MovementTotal struct {
 var MyClient = &http.Client{
 	Timeout: time.Second * 10,
 	Jar:     cJar,
+}
+
+type AhrefsServiceInterface interface {
+	GetMetricsData() (metrics_data *MetricsData, err error)
 }
 
 func makeRequest(method, url string, reader io.Reader) ([]byte, error) {
@@ -116,13 +115,13 @@ func makeRequestToGetMetricsData(method, url string, reader io.Reader, token str
 	req.Header.Add("Content-Length", "56")
 	req.Header.Add("x-requested-with", "XMLHttpRequest")
 	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36")
-	debug(httputil.DumpRequestOut(req, true))
+	// debug(httputil.DumpRequestOut(req, true))
 	res, err := MyClient.Do(req)
 	if err != nil {
 		return nil, err
 	} else {
 		defer res.Body.Close()
-		debug(httputil.DumpResponse(res, true))
+		// debug(httputil.DumpResponse(res, true))
 		if res.StatusCode == 500 {
 			return nil, errors.New("Internal Server Error")
 		}
@@ -191,8 +190,7 @@ func getTrackedKeyWords(token string, project_hash string) (tracked_keywords []b
 	return tracked_keywords, nil
 }
 
-func (a *ahrefsService) GetMetricsData() (metrics_data *MetricsData, err error) {
-	log.Println(a)
+func (a *AhrefsServiceStruct) GetMetricsData() (metrics_data *MetricsData, err error) {
 	token := ""
 	data, err := makeRequest("GET", "https://ahrefs.com/user/login", nil)
 	if err != nil {
@@ -232,8 +230,8 @@ func (a *ahrefsService) GetMetricsData() (metrics_data *MetricsData, err error) 
 	return metrics_data, nil
 }
 
-func NewService(email, password, project string) *ahrefsService {
-	return &ahrefsService{email, password, project}
+func NewService(email, password, project string) *AhrefsServiceStruct {
+	return &AhrefsServiceStruct{email, password, project}
 }
 
 //Gets projects hash from ahrefs metrics. Takes dashboard page and projects name.

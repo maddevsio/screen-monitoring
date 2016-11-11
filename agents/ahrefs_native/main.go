@@ -56,25 +56,37 @@ const (
 	defaultDashboardURL = "http://localhost:8080/dashboard/v1/register"
 )
 
+var (
+	email    = envString("AHREFS_EMAIL", defaultEmail)
+	password = envString("AHREFS_PASSWORD", defaultPassword)
+	project  = envString("AHREFS_PROJECT", defaultProjectName)
+
+	ahrefsEmail    = flag.String("ahrefsEmail", email, "Email address of your ahrefs.com account")
+	ahrefsPassword = flag.String("ahrefsPassword", password, "Password")
+	ahrefsProject  = flag.String("ahrefsProject", project, "Name of the project which data metrics you"+
+		" want to get. Be sure to use the exact name which is shown at ahrefs dahsboard.")
+)
+
+type AhrefsService struct {
+}
+
+type Env struct {
+	svc service.AhrefsServiceInterface
+}
+
 func main() {
 
 	var (
 		addr         = envString("PORT", defaultPort)
 		dashboardUrl = envString("DASHBOARD_URL", defaultDashboardURL)
-		email        = envString("AHREFS_EMAIL", defaultEmail)
-		password     = envString("AHREFS_PASSWORD", defaultPassword)
-		project      = envString("AHREFS_PROJECT", defaultProjectName)
-
-		httpAddr       = flag.String("httpAddr", ":"+addr, "HTTP listen address")
-		dashboardURL   = flag.String("dashboardURL", dashboardUrl, "Dashboard service URL")
-		ahrefsEmail    = flag.String("ahrefsEmail", email, "Email address of your ahrefs.com account")
-		ahrefsPassword = flag.String("ahrefsPassword", password, "Password")
-		ahrefsProject  = flag.String("ahrefsProject", project, "Name of the project which data metrics you"+
-			" want to get. Be sure to use the exact name which is shown at ahrefs dahsboard.")
+		httpAddr     = flag.String("httpAddr", ":"+addr, "HTTP listen address")
+		dashboardURL = flag.String("dashboardURL", dashboardUrl, "Dashboard service URL")
 	)
 
 	flag.Parse()
+
 	svc := service.NewService(*ahrefsEmail, *ahrefsPassword, *ahrefsProject)
+	env := &Env{svc}
 
 	_, err := AgentRegistration(*dashboardURL, "http://localhost:8090/")
 	if err != nil {
@@ -83,14 +95,16 @@ func main() {
 
 	e := echo.New()
 	e.File("/", "index.html")
-	e.GET("/data", func(c echo.Context) error {
-		metrics_data, err := svc.GetMetricsData()
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-		return c.JSON(http.StatusOK, metrics_data)
-	})
+	e.GET("/data", env.showData)
 	e.Run(standard.New(*httpAddr))
+}
+
+func (env *Env) showData(c echo.Context) error {
+	metrics_data, err := env.svc.GetMetricsData()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusOK, metrics_data)
 }
 
 func envString(env, fallback string) string {
