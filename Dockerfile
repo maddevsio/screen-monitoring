@@ -1,4 +1,5 @@
 FROM golang:1.7
+
 MAINTAINER Gennady Karev <pendolf666@gmail.com>
 
 ADD . /go/src/github.com/maddevsio/screen-monitoring
