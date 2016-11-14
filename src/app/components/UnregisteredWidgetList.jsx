@@ -70,7 +70,7 @@ class UnregisteredWidgetList extends PureComponent {
                       return (
                         <WidgetRow key={idx} widget={w} onClick={this._onRegisterWidget}/>
                       );
-                    });
+                    })
                   }
               </tbody>
             </table>
