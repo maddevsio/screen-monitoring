@@ -1,3 +1,4 @@
+![Travis-CI](https://api.travis-ci.org/maddevsio/screen-monitoring.svg?branch=master)
 #Screen Monitor project
 
 ## Installation
