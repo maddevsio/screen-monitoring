@@ -198,7 +198,9 @@ func (m *DbManager) GetUnlinkedWidgets() (result []Widget, err error) {
 		if err != nil {
 			return
 		}
-		result = append(result, row)
+		if row.Id != nil {
+			result = append(result, row)
+		}
 	}
 	return
 }
@@ -207,8 +209,8 @@ func (m *DbManager) GetPages() (result []Page, err error) {
 	result = []Page{}
 	selectQuery := `
 		SELECT p.*, w.* FROM pages as p
-		INNER JOIN page_widgets as pw ON p.id = pw.id_page
-		INNER JOIN widgets as w ON w.id = pw.id_widget
+		LEFT OUTER JOIN page_widgets as pw ON p.id = pw.id_page
+		LEFT OUTER JOIN widgets as w ON w.id = pw.id_widget
 		ORDER BY p.id;
 	`
 	db, err := m.Db()
@@ -226,9 +228,14 @@ func (m *DbManager) GetPages() (result []Page, err error) {
 	for rows.Next() {
 		var rowWidget Widget
 		var rowPage Page
-		err = rows.Scan(&rowPage.Id, &rowPage.Title, &rowPage.Visible,
-			&rowWidget.Id, &rowWidget.Width, &rowWidget.Height,
-			&rowWidget.Url, &rowWidget.Content)
+		err = rows.Scan(&rowPage.Id,
+			&rowPage.Title,
+			&rowPage.Visible,
+			&rowWidget.Id,
+			&rowWidget.Width,
+			&rowWidget.Height,
+			&rowWidget.Url,
+			&rowWidget.Content)
 
 		if err != nil {
 			return

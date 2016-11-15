@@ -18,11 +18,22 @@ func (w *Page) ToJson() ([]byte, error) {
 }
 
 type Widget struct {
-	Id      string `json:"id"`
-	Width   int    `json:"width"`
-	Height  int    `json:"height"`
-	Content string `json:"content"`
-	Url     string `json:"url"`
+	Id      *string `json:"id"`
+	Width   *int64  `json:"width"`
+	Height  *int64  `json:"height"`
+	Content *string `json:"content"`
+	Url     *string `json:"url"`
+}
+
+func NewWidget(id string, width, height int64, url string) Widget {
+	var defaultContent string
+	return Widget{
+		Id:      &id,
+		Width:   &width,
+		Height:  &height,
+		Url:     &url,
+		Content: &defaultContent,
+	}
 }
 
 func (w *Widget) ToJson() ([]byte, error) {

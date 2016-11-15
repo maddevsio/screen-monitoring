@@ -33,7 +33,7 @@ func (s *DashboardServiceTestSuite) TestGetPagesReturnPagesArray() {
 			Title:   "page1",
 			Visible: true,
 			Widgets: []Widget{
-				Widget{Id: "widget_1", Url: "http://example.com:8080/", Width: 450, Height: 350},
+				NewWidget("widget_1", 50, 350, "http://example.com:8080/"),
 			},
 		},
 		Page{
@@ -41,8 +41,8 @@ func (s *DashboardServiceTestSuite) TestGetPagesReturnPagesArray() {
 			Title:   "page2",
 			Visible: true,
 			Widgets: []Widget{
-				Widget{Id: "widget_1", Url: "http://example.com:8081/", Width: 250, Height: 150},
-				Widget{Id: "widget_2", Url: "http://example.com:8081/", Width: 250, Height: 150},
+				NewWidget("widget_1", 250, 150, "http://example.com:8081/"),
+				NewWidget("widget_2", 250, 150, "http://example.com:8082/"),
 			},
 		},
 	}
@@ -58,12 +58,7 @@ func (s *DashboardServiceTestSuite) TestGetPagesReturnPagesArray() {
 
 func (s *DashboardServiceTestSuite) TestRegisterWidgetSuccess() {
 	var expectedResponse = RegisterResponse{Success: true}
-	var widget = Widget{
-		Id:     "widget_1",
-		Url:    "http://example.com:8081/",
-		Width:  250,
-		Height: 150,
-	}
+	var widget = NewWidget("widget_1", 250, 150, "http://example.com:8081/")
 
 	s.DbManagerInstance.On("InsertOrUpdateWidget", &widget).Return(int64(1), nil)
 	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
@@ -78,12 +73,7 @@ func (s *DashboardServiceTestSuite) TestRegisterWidgetSuccess() {
 func (s *DashboardServiceTestSuite) TestRegisterWidgetFail() {
 	var expectedResponse = RegisterResponse{Success: false}
 	var expectedError = errors.New("Some error")
-	var widget = Widget{
-		Id:     "widget_2",
-		Url:    "http://example.com:8000/",
-		Width:  250,
-		Height: 150,
-	}
+	var widget = NewWidget("widget_2", 250, 150, "http://example.com:8080/")
 
 	s.DbManagerInstance.On("InsertOrUpdateWidget", &widget).Return(int64(0), expectedError)
 	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
@@ -181,7 +171,9 @@ func (s *DashboardServiceTestSuite) TestInitUpMigrationsFail() {
 }
 
 func (s *DashboardServiceTestSuite) TestGetUnregisteredWidgetsSuccess() {
-	expectedWidgets := []Widget{Widget{Id: "w1", Url: "http://example1.com/", Width: 450, Height: 350}}
+	expectedWidgets := []Widget{
+		NewWidget("w1", 50, 350, "http://example1.com/"),
+	}
 	s.DbManagerInstance.On("GetUnlinkedWidgets").Return(expectedWidgets, nil)
 	var service = NewDashboardService(s.MigratorInstance, s.DbManagerInstance)
 	actualWidgets, actualError := service.GetUnregisteredWidgets()
