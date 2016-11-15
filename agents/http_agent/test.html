@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title></title>
+  </head>
+<body>
+    <div>
+      <p>google.com:80</p>
+      <h2>gauge</h2>
+    </div>
+    <script>
+    function getData() {
+      var xhr = new XMLHttpRequest();
+      var json = JSON.stringify({
+        url: "google.com:80"
+      })
+
+      xhr.open('POST', 'http://192.168.20.180:8080/check', true);
+      xhr.setRequestHeader('Content-Type', 'application/json: charset=utf-8');
+
+      xhr.timeout = 200;
+
+      xhr.onload = function() {
+        console.log(this.responseText);
+      }
+      xhr.onerror = function() {
+        console.log('Error ' + this.status);
+      }
+      xhr.ontimeout = function() {
+        console.log("timeout");
+      };
+      xhr.send(json);
+    }
+
+    setTimeout(getData, 5000);
+    </script>
+  <body>
+</html>
