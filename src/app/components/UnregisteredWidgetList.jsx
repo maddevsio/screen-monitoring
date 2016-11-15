@@ -2,11 +2,13 @@ import React, {PureComponent} from 'react';
 import WidgetRow from './WidgetRow.jsx';
 import PageButton from './PageButton.jsx';
 import { hashHistory } from 'react-router'
+import AddPageForm from './AddPageForm.jsx';
 
 const WIDGETS_UNREG_URL = '/dashboard/v1/widgets/unregistered';
 const GET_PAGES_URL = '/dashboard/v1/pages';
 const TABLE_VIEW = 0;
 const PAGES_PREVIEW = 1;
+const PAGES_ADD = 2;
 
 const css = {
   page: {
@@ -36,6 +38,7 @@ class UnregisteredWidgetList extends PureComponent {
   constructor(props) {
       super(props);
       this.state = {
+        pages: props.pages,
         widgets: props.widgets,
         viewState: props.viewState,
         selected: null
@@ -96,11 +99,46 @@ class UnregisteredWidgetList extends PureComponent {
   }
 
   _choosePage = (p) => {
-    console.log("PAGE: ", p);
     var selected = this.state.selected;
     if (selected) {
       this._postRegisterWidgetOnPage(p.id, selected.id);
     }
+  }
+
+  _onCreatePage = (p) => {
+    var self = this;
+    const CREATE_PAGE_URL = '/dashboard/v1/pages/new';
+    fetch(CREATE_PAGE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(p)
+    })
+    .then(r => r.json())
+    .then(data => {
+       if (data.Success) {
+         p.id = data.Id;
+         this.setState({
+           selected: null,
+           pages: pages.push(p),
+           viewState: PAGES_PREVIEW
+         });
+       } else {
+         alert(data.error);
+         this.setState({
+           selected: null,
+           viewState: PAGES_PREVIEW
+         });
+       }
+    })
+    .catch((ex) => {
+        console.error(ex);
+        this.setState({
+          selected: null,
+          viewState: PAGES_PREVIEW
+        });
+    });
   }
 
   _renderTable = () => {
@@ -135,6 +173,14 @@ class UnregisteredWidgetList extends PureComponent {
     );
   }
 
+  _showAddPageForm = () => {
+    this.setState({viewState: PAGES_ADD});
+  }
+
+  _onCancelPage = () => {
+    this.setState({viewState: PAGES_PREVIEW});
+  }
+
   _renderPages = () => {
     return (
         <div className="panel panel-default" style={{"marginTop": "15px"}}>
@@ -142,7 +188,7 @@ class UnregisteredWidgetList extends PureComponent {
               <b>Pages list:</b>
             </div>
             <div className="panel-body">
-                <div key={0} className="btn btn-success" style={css.page}>
+                <div key={0} className="btn btn-success" onClick={this._showAddPageForm} style={css.page}>
                   <div><i className="fa fa-2x fa-plus" aria-hidden="true"></i></div>
                 </div>
                 {
@@ -153,11 +199,19 @@ class UnregisteredWidgetList extends PureComponent {
     );
   }
 
+  _renderPageAdd = () => {
+    return (
+      <AddPageForm onCreate={this._onCreatePage} onCancel={this._onCancelPage}/>
+    )
+  }
+
   render(){
     if (this.state.viewState == TABLE_VIEW) {
       return this._renderTable();
     } else if(this.state.viewState == PAGES_PREVIEW) {
       return this._renderPages();
+    } else if(this.state.viewState == PAGES_ADD) {
+      return this._renderPageAdd();
     }
   }
 }
