@@ -3,13 +3,13 @@ import { Router, Route, hashHistory } from 'react-router';
 import {render} from 'react-dom';
 import App from './App.jsx';
 import UnregisteredWidgetList from './components/UnregisteredWidgetList.jsx';
-
-
+import AddNewPageContainer from './components/AddNewPageContainer.jsx';
 
 render((
   <Router history={hashHistory}>
     <Route path="/" component={App}/>
     <Route path="/unregistered" component={UnregisteredWidgetList}/>
+    <Route path="/pages/new" component={AddNewPageContainer}/>
   </Router>
 ),
 document.getElementById('app'));

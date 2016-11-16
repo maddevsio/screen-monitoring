@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import WidgetRow from './WidgetRow.jsx';
 import PageButton from './PageButton.jsx';
-import { hashHistory } from 'react-router'
+import { hashHistory } from 'react-router';
 import AddPageForm from './AddPageForm.jsx';
 
 const WIDGETS_UNREG_URL = '/dashboard/v1/widgets/unregistered';
