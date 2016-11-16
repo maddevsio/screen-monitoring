@@ -119,9 +119,9 @@ class UnregisteredWidgetList extends PureComponent {
     .then(data => {
        if (data.Success) {
          p.id = data.Id;
+         this.state.pages.push(p)
          this.setState({
-           selected: null,
-           pages: pages.push(p),
+           pages: this.state.pages,
            viewState: PAGES_PREVIEW
          });
        } else {
