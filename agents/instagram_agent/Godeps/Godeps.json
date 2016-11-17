@@ -1,0 +1,132 @@
+{
+	"ImportPath": "github.com/maddevsio/screen-monitoring/agents/instagram_agent",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v75",
+	"Deps": [
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Comment": "v1.1.0",
+			"Rev": "346938d642f2ec3594ed81d874461961cd0faa76"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo",
+			"Comment": "2.1-4-g1924528",
+			"Rev": "1924528614ba26e99bd7dd91800eddb19364bed6"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/context",
+			"Comment": "2.1-4-g1924528",
+			"Rev": "1924528614ba26e99bd7dd91800eddb19364bed6"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/engine",
+			"Comment": "2.1-4-g1924528",
+			"Rev": "1924528614ba26e99bd7dd91800eddb19364bed6"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/engine/standard",
+			"Comment": "2.1-4-g1924528",
+			"Rev": "1924528614ba26e99bd7dd91800eddb19364bed6"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/log",
+			"Comment": "2.1-4-g1924528",
+			"Rev": "1924528614ba26e99bd7dd91800eddb19364bed6"
+		},
+		{
+			"ImportPath": "github.com/labstack/gommon/color",
+			"Comment": "v0.1.0",
+			"Rev": "2d272df536d051e737aea353b86c979d6e88bce0"
+		},
+		{
+			"ImportPath": "github.com/labstack/gommon/log",
+			"Comment": "v0.1.0",
+			"Rev": "2d272df536d051e737aea353b86c979d6e88bce0"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Comment": "v0.0.6-9-gd228849",
+			"Rev": "d228849504861217f796da67fae4f6e347643f15"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.2.0-2-gfba66eb",
+			"Rev": "fba66eb11643069e747022997e9be3b502b2c6fb"
+		},
+		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Comment": "v1.0.0",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Comment": "v1.1.4-4-g976c720",
+			"Rev": "976c720a22c8eb4eb6a0b4348ad85ad12491a506"
+		},
+		{
+			"ImportPath": "github.com/valyala/fasttemplate",
+			"Rev": "3b874956e03f1636d171bda64b130f9135f42cff"
+		},
+		{
+			"ImportPath": "github.com/yanatan16/golang-instagram/instagram",
+			"Rev": "aff9deb8031a84f3ee1a4bbd7ad30f16ac6c8370"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "a646d33e2ee3172a661fc09bca23bb4889a41bc8"
+		},
+		{
+			"ImportPath": "upper.io/db.v2",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/internal/cache",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/internal/cache/hashstructure",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/internal/logger",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/internal/sqladapter",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/internal/sqladapter/exql",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/lib/reflectx",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/lib/sqlbuilder",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		},
+		{
+			"ImportPath": "upper.io/db.v2/sqlite",
+			"Comment": "v2.0.0-rc3",
+			"Rev": "16e06e6298f93f10cddba5c8476d873ba09a40ee"
+		}
+	]
+}
