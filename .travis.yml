@@ -2,16 +2,14 @@ language: go
 go:
   - 1.7
 
-addons:
-  apt:
-    packages:
-      - nodejs
-
 install:
+   - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
   # Add Godeps dependencies to GOPATH and PATH
   - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
   - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
-  - npm install
 
 script:
   - go test -v ./...
