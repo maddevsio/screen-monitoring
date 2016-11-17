@@ -1,35 +1,32 @@
 {
 	"ImportPath": "github.com/maddevsio/screen-monitoring",
 	"GoVersion": "go1.7",
-	"GodepVersion": "v74",
-	"Packages": [
-		"./..."
-	],
+	"GodepVersion": "v75",
 	"Deps": [
 		{
-			"ImportPath": "github.com/boltdb/bolt",
-			"Comment": "v1.3.0",
-			"Rev": "583e8937c61f1af6513608ccc75c97b6abdf4ff9"
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Comment": "v1.1.0",
+			"Rev": "346938d642f2ec3594ed81d874461961cd0faa76"
 		},
 		{
 			"ImportPath": "github.com/go-kit/kit/endpoint",
-			"Comment": "v0.2.0-73-g483f2cd",
-			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+			"Comment": "v0.3.0",
+			"Rev": "f66b0e13579bfc5a48b9e2a94b1209c107ea1f41"
 		},
 		{
 			"ImportPath": "github.com/go-kit/kit/log",
-			"Comment": "v0.2.0-73-g483f2cd",
-			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+			"Comment": "v0.3.0",
+			"Rev": "f66b0e13579bfc5a48b9e2a94b1209c107ea1f41"
 		},
 		{
 			"ImportPath": "github.com/go-kit/kit/transport/http",
-			"Comment": "v0.2.0-73-g483f2cd",
-			"Rev": "483f2cd7ba885520c7dbc6e50199140925f7b68d"
+			"Comment": "v0.3.0",
+			"Rev": "f66b0e13579bfc5a48b9e2a94b1209c107ea1f41"
 		},
 		{
 			"ImportPath": "github.com/go-logfmt/logfmt",
-			"Comment": "v0.2.0-9-gd432719",
-			"Rev": "d4327190ff838312623b09bfeb50d7c93c8d9c1d"
+			"Comment": "v0.3.0",
+			"Rev": "390ab7935ee28ec6b286364bba9b4dd6410cb3d5"
 		},
 		{
 			"ImportPath": "github.com/go-stack/stack",
@@ -38,28 +35,78 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/mux",
-			"Comment": "v1.1-24-g0b13a92",
-			"Rev": "0b13a922203ebdbfd236c818efcd5ed46097d690"
+			"Comment": "v1.1-27-g757bef9",
+			"Rev": "757bef944d0f21880861c2dd9c871ca543023cba"
 		},
 		{
 			"ImportPath": "github.com/kr/logfmt",
 			"Rev": "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 		},
 		{
+			"ImportPath": "github.com/mattes/migrate/driver",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattes/migrate/driver/sqlite3",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattes/migrate/file",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattes/migrate/migrate",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattes/migrate/migrate/direction",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattes/migrate/pipe",
+			"Comment": "v1.2.0-70-gce1b59b",
+			"Rev": "ce1b59bb819416ca67422929b1cb48bb342720b6"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.2.0-2-gfba66eb",
+			"Rev": "fba66eb11643069e747022997e9be3b502b2c6fb"
+		},
+		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Comment": "v1.0.0",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
+		},
+		{
 			"ImportPath": "github.com/rcrowley/go-metrics",
-			"Rev": "bdb33529eca3e55eac7328e07c57012a797af602"
+			"Rev": "ab2277b1c5d15c3cba104e9cbddbdfc622df5ad8"
+		},
+		{
+			"ImportPath": "github.com/stretchr/objx",
+			"Rev": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Comment": "v1.1.4-4-g976c720",
+			"Rev": "976c720a22c8eb4eb6a0b4348ad85ad12491a506"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/mock",
+			"Comment": "v1.1.4-4-g976c720",
+			"Rev": "976c720a22c8eb4eb6a0b4348ad85ad12491a506"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "9bc2a3340c92c17a20edcd0080e93851ed58f5d5"
+			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context/ctxhttp",
-			"Rev": "9bc2a3340c92c17a20edcd0080e93851ed58f5d5"
-		},
-		{
-			"ImportPath": "golang.org/x/sys/unix",
-			"Rev": "a646d33e2ee3172a661fc09bca23bb4889a41bc8"
+			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
 		}
 	]
 }
