@@ -17,7 +17,7 @@ class AddNewPageContainer extends PureComponent {
     .then(r => r.json())
     .then(data => {
        if (data.Success) {
-         hashHistory.push('/');
+         hashHistory.push('/pages/list');
        } else {
          alert(data.error);
        }
@@ -28,7 +28,7 @@ class AddNewPageContainer extends PureComponent {
   }
 
   _onCancelPage = () => {
-    hashHistory.push('/');
+    hashHistory.push('/pages/list');
   }
 
   render() {

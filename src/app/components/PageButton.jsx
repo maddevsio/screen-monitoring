@@ -5,9 +5,6 @@ const css = {
     "width": "150px",
     "height": "150px",
     "float":"left",
-    "display": "flex",
-    "alignItems": "center",
-    "justifyContent": "center",
     "margin": "5px"
   }
 }
@@ -31,9 +28,9 @@ class PageButton extends PureComponent {
   }
 
   _renderPageVisibility = (visibility) => {
-    if (visibility) {
+    if (!visibility) {
       return (
-          <span className="label label-warning">Invisible</span>
+          <span className="label label-warning">Invisible page</span>
       )
     }
     return (<span></span>);
@@ -46,6 +43,11 @@ class PageButton extends PureComponent {
     return false;
   }
 
+  _getWidgetsCount = () => {
+    var page = this.state.page;
+    return (page && page.content ? page.content.length : 0);
+  }
+
   render(){
     var p = this.state.page;
     return (
@@ -54,6 +56,7 @@ class PageButton extends PureComponent {
         onClick={this._clickPage}>
         <div>{p.title}</div>
         <div>{this._renderPageVisibility(p.visible)}</div>
+        <div>Widgets: <strong>{this._getWidgetsCount()}</strong></div>
       </div>
     );
   }
