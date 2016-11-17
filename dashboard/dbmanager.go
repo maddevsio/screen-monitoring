@@ -251,7 +251,11 @@ func (m *DbManager) GetPages() (result []Page, err error) {
 			page.Title = rowPage.Title
 			page.Visible = rowPage.Visible
 		}
-		page.Widgets = append(page.Widgets, rowWidget)
+
+		if rowWidget.Id != nil {
+			page.Widgets = append(page.Widgets, rowWidget)
+		}
+
 		currentPageId = rowPage.Id
 	}
 
