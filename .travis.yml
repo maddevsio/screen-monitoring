@@ -2,7 +2,7 @@ language: go
 go:
   - 1.7
 
-install:
+before_install:
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
   - nvm use stable
