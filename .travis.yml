@@ -9,7 +9,8 @@ before_install:
   - npm install
 
 script:
-  - go test -v ./...
+  - go test -v ./dashboard/
 
 after_success:
+  - go build -v
   - npm run build
