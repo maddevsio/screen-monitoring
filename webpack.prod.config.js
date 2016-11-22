@@ -6,7 +6,7 @@ var APP_DIR = path.resolve(__dirname, 'src/app');
 
 
 config.entry = APP_DIR + '/index.jsx';
-config.output.publicPath = '/public/';
+config.output.publicPath = '/';
 config.module.loaders = config.module.loaders.concat([
     {
         test : /\.jsx?/,
