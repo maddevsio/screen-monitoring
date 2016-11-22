@@ -11,9 +11,7 @@ render((
     <Route path="/" component={App}/>
     <Route path="/unregistered" component={UnregisteredWidgetList}/>
     <Route path="/pages/list" component={PagesListContainer}/>
-    <Route path="/pages/list/:selectedWidgetId/" component={PagesListContainer}/>
     <Route path="/pages/new" component={AddNewPageContainer}/>
-    <Route path="/pages/new/:selectedWidgetId/" component={AddNewPageContainer}/>
   </Router>
 ),
 document.getElementById('app'));
