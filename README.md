@@ -130,3 +130,8 @@ Response (fail):
       ```
     * This command will create database file with name ```screen_monitoring```
       inside root directory of project
+
+### URL of monitoring application
+   * ```#/unregistered``` - displays list with unregistered widgets.
+   * ```#/pages/list```   - displays list of pages with ability to add new page
+   * ```#/pages/new```    - displays form for adding new page.
