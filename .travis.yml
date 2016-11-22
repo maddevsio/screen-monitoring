@@ -2,20 +2,25 @@ language: go
 go:
   - 1.7.3
   - tip
+
 env:
-  gloabal:
+  global:
     - GO_FOR_RELEASE=1.7.3
     - IMAGE_NAME=maddevsio/sm-dashboard
+
+services:
+  - docker
+
 before_install:
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
   - nvm use stable
   - npm install
+
 script:
   - go test -v ./dashboard/
-after_success:
   - go build -v
-  - npm run build
-  - curl https://github.com/pendolf/push-to-docker/blob/master/push.sh | bash
-services:
-  - docker
+  - npm run build-production
+
+after_success:
+  - curl https://raw.githubusercontent.com/maddevsio/travis-push-to-docker/master/sm-push.sh | bash

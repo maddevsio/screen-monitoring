@@ -1,0 +1,13 @@
+FROM golang:1.7
+
+MAINTAINER Andreev Vlad <andreevlad@gmail.com>
+
+COPY ./screen-monitoring /screen-monitoring/
+COPY ./dashboard /screen-monitoring/dashboard
+COPY ./public /screen-monitoring/public
+
+WORKDIR /screen-monitoring
+
+EXPOSE 8080
+
+CMD ["./screen-monitoring"]
