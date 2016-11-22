@@ -17,7 +17,11 @@ class AddNewPageContainer extends PureComponent {
     .then(r => r.json())
     .then(data => {
        if (data.Success) {
-         hashHistory.push('/pages/list');
+         var selectedId = this.props.location.state.selectedWidgetId;
+         hashHistory.push({
+           pathname: '/pages/list',
+           state: { selectedWidgetId: selectedId }
+         });
        } else {
          alert(data.error);
        }
@@ -28,7 +32,11 @@ class AddNewPageContainer extends PureComponent {
   }
 
   _onCancelPage = () => {
-    hashHistory.push('/pages/list');
+    var selectedId = this.props.location.state.selectedWidgetId;
+    hashHistory.push({
+      pathname: '/pages/list',
+      state: { selectedWidgetId: selectedId }
+    });
   }
 
   render() {
