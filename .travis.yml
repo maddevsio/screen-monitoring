@@ -1,26 +1,24 @@
 language: go
 go:
-  - 1.7.3
-  - tip
-
+- 1.7.3
+- tip
 env:
   global:
-    - GO_FOR_RELEASE=1.7.3
-    - IMAGE_NAME=maddevsio/sm-dashboard
-
+  - GO_FOR_RELEASE=1.7.3
+  - IMAGE_NAME=maddevsio/sm-dashboard
 services:
-  - docker
-
+- docker
 before_install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
-  - npm install
-
+- openssl aes-256-cbc -K $encrypted_abfc74a8332b_key -iv $encrypted_abfc74a8332b_iv
+  -in sm-docker-key.enc -out ./sm-docker-key -d
+- ". $HOME/.nvm/nvm.sh"
+- nvm install stable
+- nvm use stable
+- npm install
 script:
-  - go test -v ./dashboard/
-  - go build -v
-  - npm run build-production
-
+- go test -v ./dashboard/
+- go build -v
+- npm run build-production
 after_success:
-  - curl https://raw.githubusercontent.com/maddevsio/travis-push-to-docker/master/sm-push.sh | bash
+- curl https://raw.githubusercontent.com/maddevsio/travis-push-to-docker/master/sm-push.sh
+  | bash
