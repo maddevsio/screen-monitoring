@@ -24,6 +24,6 @@ deploy:
   skip_cleanup: true
   script: chmod 600 sm-docker-key && 
     ssh -o StrictHostKeyChecking=no -i ./sm-docker-key sm-docker@sm.maddevs.io "pull $IMAGE_NAME:v.$TRAVIS_BUILD_NUMBER" &&
-    ssh -o StrictHostKeyChecking=no -i ./sm-docker-key sm-docker@sm.maddevs.io "rm -f screen-monitoring" &&
-    ssh -o StrictHostKeyChecking=no -i ./sm-docker-key sm-docker@sm.maddevs.io "run -d --restart=always -p 8080:8080 -v /srv/docker/sm-docker/screen-monitoring/screen_monitoring.db:/screen-monitoring/screen_monitoring.db $IMAGE_NAME:v.$TRAVIS_BUILD_NUMBER"
+    ssh -o StrictHostKeyChecking=no -i ./sm-docker-key sm-docker@sm.maddevs.io "rm -f screen-monitoring" || true &&
+    ssh -o StrictHostKeyChecking=no -i ./sm-docker-key sm-docker@sm.maddevs.io "run -d --restart=always --name=screen-monitoring -p 8080:8080 -v /srv/docker/sm-docker/screen-monitoring/screen_monitoring.db:/screen-monitoring/screen_monitoring.db $IMAGE_NAME:v.$TRAVIS_BUILD_NUMBER"
 
